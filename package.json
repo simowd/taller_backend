@@ -1,0 +1,11 @@
+{
+  "name": "taller_backend",
+  "version": "0.0.1",
+  "description": "Backend para la materia de Taller de Grado II",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin Campuzano Flores",
+  "license": "ISC"
+}
