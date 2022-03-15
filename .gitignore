@@ -1,3 +1,6 @@
+#Content created by docker
+mysql_data/
+
 # Logs
 logs
 *.log
