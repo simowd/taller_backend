@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  mysql-database:
+    image: mysql-database
+    build:
+      context: ../
+      dockerfile: ./docker/sql-database.Dockerfile
+    volumes:
+      - ../sql:/docker-entrypoint-initdb.d
+      - ../mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+  backend:
+    image: taller-grado-backend
+    build:
+      context: ../
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ../:/usr/src/app
+    ports:
+      - 3000:3000
+  

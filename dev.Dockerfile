@@ -8,11 +8,8 @@ COPY --chown=node:node . .
 
 RUN npm ci
 
-#build the project
-RUN npm run tsc
-
 USER node
 
-CMD npm start
+CMD npm run dev
 
 
