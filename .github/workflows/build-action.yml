@@ -1,7 +1,7 @@
 name: build-action
 on:
   push:
-    brances:
+    branches:
       - main
     pull_request:
       branches: [main]
