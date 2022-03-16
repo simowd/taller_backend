@@ -6,7 +6,7 @@ COPY --chown=node:node . .
 
 #ENV somevar=var
 
-RUN npm ci
+RUN npm install
 
 USER node
 

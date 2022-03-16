@@ -1,4 +1,4 @@
-USE taller
+USE taller;
 -- Created by Vertabelo (http://vertabelo.com)
 -- Last modification date: 2021-11-20 20:14:16.841
 
