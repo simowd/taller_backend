@@ -1,8 +1,11 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import { databaseCheck } from './utils/database';
 
 const app = express();
+
+databaseCheck();
 
 //Configuring Middleware
 app.use(cors());

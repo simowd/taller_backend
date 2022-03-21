@@ -2,15 +2,15 @@ CREATE DATABASE testing;
 GRANT ALL PRIVILEGES ON testing.* TO 'admin'@'%';
 USE testing;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2021-11-20 20:14:16.841
+-- Last modification date: 2022-03-21 21:57:46.029
 
 -- tables
 -- Table: country
 CREATE TABLE country (
-    id_country int NOT NULL,
-    country int NOT NULL,
+    id_country int NOT NULL AUTO_INCREMENT,
+    country varchar(255) NOT NULL,
     tr_id int NULL,
-    tr_date int NULL,
+    tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
     CONSTRAINT country_pk PRIMARY KEY (id_country)
@@ -18,7 +18,7 @@ CREATE TABLE country (
 
 -- Table: file
 CREATE TABLE file (
-    id_file int NOT NULL,
+    id_file int NOT NULL AUTO_INCREMENT,
     id_user int NOT NULL,
     id_folder int NOT NULL,
     path varchar(255) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE file (
 
 -- Table: folder
 CREATE TABLE folder (
-    id_folder int NOT NULL,
+    id_folder int NOT NULL AUTO_INCREMENT,
     id_user int NOT NULL,
     path varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
@@ -48,8 +48,8 @@ CREATE TABLE folder (
 
 -- Table: gender
 CREATE TABLE gender (
-    id_gender int NOT NULL,
-    gender int NOT NULL,
+    id_gender int NOT NULL AUTO_INCREMENT,
+    gender varchar(25) NOT NULL AUTO_INCREMENT,
     tr_id int NOT NULL,
     tr_date timestamp NOT NULL,
     tr_user_id int NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE gender (
 
 -- Table: language
 CREATE TABLE language (
-    id_language int NOT NULL,
+    id_language int NOT NULL AUTO_INCREMENT,
     language varchar(255) NOT NULL,
     tr_id int NULL,
     tr_date timestamp NULL,
@@ -70,7 +70,7 @@ CREATE TABLE language (
 
 -- Table: output
 CREATE TABLE output (
-    id_output int NOT NULL,
+    id_output int NOT NULL AUTO_INCREMENT,
     id_file int NOT NULL,
     status int NOT NULL,
     result varchar(500) NOT NULL,
@@ -83,8 +83,8 @@ CREATE TABLE output (
 
 -- Table: setting
 CREATE TABLE setting (
-    id_setting int NOT NULL,
-    user_id_user int NOT NULL,
+    id_setting int NOT NULL AUTO_INCREMENT,
+    id_user int NOT NULL,
     dark_light int NOT NULL,
     audio_feedback int NOT NULL,
     animations int NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE tr_user (
 
 -- Table: user
 CREATE TABLE user (
-    id_user int NOT NULL,
+    id_user int NOT NULL AUTO_INCREMENT,
     id_country int NOT NULL,
     id_gender int NOT NULL,
     id_language int NOT NULL,
@@ -216,7 +216,7 @@ ALTER TABLE output ADD CONSTRAINT output_file FOREIGN KEY output_file (id_file)
     REFERENCES file (id_file);
 
 -- Reference: setting_user (table: setting)
-ALTER TABLE setting ADD CONSTRAINT setting_user FOREIGN KEY setting_user (user_id_user)
+ALTER TABLE setting ADD CONSTRAINT setting_user FOREIGN KEY setting_user (id_user)
     REFERENCES user (id_user);
 
 -- Reference: user_country (table: user)
@@ -232,4 +232,3 @@ ALTER TABLE user ADD CONSTRAINT user_language FOREIGN KEY user_language (id_lang
     REFERENCES language (id_language);
 
 -- End of file.
-
