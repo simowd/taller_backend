@@ -47,11 +47,11 @@ CREATE TABLE folder (
 -- Table: gender
 CREATE TABLE gender (
     id_gender int NOT NULL AUTO_INCREMENT,
-    gender varchar(25) NOT NULL AUTO_INCREMENT,
-    tr_id int NOT NULL,
-    tr_date timestamp NOT NULL,
-    tr_user_id int NOT NULL,
-    tr_ip varchar(50) NOT NULL,
+    gender varchar(25) NOT NULL,
+    tr_id int NULL,
+    tr_date timestamp NULL,
+    tr_user_id int NULL,
+    tr_ip varchar(50) NULL,
     CONSTRAINT gender_pk PRIMARY KEY (id_gender)
 );
 
@@ -179,9 +179,9 @@ CREATE TABLE tr_user (
 -- Table: user
 CREATE TABLE user (
     id_user int NOT NULL AUTO_INCREMENT,
-    id_country int NOT NULL,
+    id_country varchar(5) NOT NULL,
     id_gender int NOT NULL,
-    id_language int NOT NULL,
+    id_language varchar(5) NOT NULL,
     name varchar(50) NULL,
     last_name varchar(50) NULL,
     username varchar(50) NOT NULL,
