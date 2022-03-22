@@ -5,9 +5,8 @@ class Country extends Model {}
 
 Country.init({
   id_country: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.TEXT,
     primaryKey: true,
-    autoIncrement: true
   },
   country: {
     type: DataTypes.TEXT,

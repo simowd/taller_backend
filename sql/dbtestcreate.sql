@@ -7,7 +7,7 @@ USE testing;
 -- tables
 -- Table: country
 CREATE TABLE country (
-    id_country int NOT NULL AUTO_INCREMENT,
+    id_country varchar(5) NOT NULL,
     country varchar(255) NOT NULL,
     tr_id int NULL,
     tr_date timestamp NULL,
@@ -59,7 +59,7 @@ CREATE TABLE gender (
 
 -- Table: language
 CREATE TABLE language (
-    id_language int NOT NULL AUTO_INCREMENT,
+    id_language varchar(5) NOT NULL,
     language varchar(255) NOT NULL,
     tr_id int NULL,
     tr_date timestamp NULL,
