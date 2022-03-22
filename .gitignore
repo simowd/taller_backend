@@ -1,5 +1,6 @@
 #Content created by docker
 mysql_data/
+build/
 
 # Logs
 logs
