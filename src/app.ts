@@ -3,6 +3,8 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { databaseCheck } from './utils/database';
 
+import userRouter from './controllers/user';
+
 const app = express();
 
 databaseCheck();
@@ -12,9 +14,7 @@ app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 
-app.get('/ping', (_req, res) => {
-  console.log('someone pinged here :(');
-  res.send('pong hola juanchis');
-});
+//Setting up the controllers
+app.use('/api/v1/users', userRouter);
 
 export default app;

@@ -10,27 +10,27 @@ User.init({
     autoIncrement: true
   },
   name: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(50),
     allowNull: false
   },
   last_name: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(50),
     allowNull: false
   },
   username: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(50),
     allowNull: false
   },
   email: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   password: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   picture: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   status: {
@@ -47,13 +47,13 @@ User.init({
     type: DataTypes.INTEGER
   },
   tr_ip: {
-    type: DataTypes.TEXT
+    type: DataTypes.STRING(50)
   },
 }, {
   sequelize,
   underscored: true,
   timestamps: false,
-  modelName: 'user'
+  modelName: 'user',
 });
 
 export default User;

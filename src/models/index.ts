@@ -4,14 +4,18 @@ import Language from './Language';
 import User from './User';
 
 //Setting up the relationships table User has on DB
-User.hasOne(Country);
-User.hasOne(Gender);
-User.hasOne(Language);
+Country.hasMany(User);
+Gender.hasMany(User);
+Language.hasMany(User);
 
-Country.belongsTo(User);
-Gender.belongsTo(User);
-Language.belongsTo(User);
+User.belongsTo(Country);
+User.belongsTo(Gender);
+User.belongsTo(Language);
 
-module.exports = {
-  User
-};
+//Syncing all tables
+User.sync();
+Country.sync();
+Gender.sync();
+Language.sync();
+
+export { User, Country, Gender, Language };

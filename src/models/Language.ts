@@ -5,11 +5,11 @@ class Language extends Model {}
 
 Language.init({
   id_language: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(5),
     primaryKey: true,
   },
   language: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   tr_id: {
@@ -22,7 +22,7 @@ Language.init({
     type: DataTypes.INTEGER
   },
   tr_ip: {
-    type: DataTypes.TEXT
+    type: DataTypes.STRING(50)
   },
 }, {
   sequelize,

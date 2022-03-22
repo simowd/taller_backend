@@ -1,8 +1,9 @@
 CREATE DATABASE testing;
+ALTER DATABASE testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON testing.* TO 'admin'@'%';
 USE testing;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-03-21 21:57:46.029
+-- Last modification date: 2022-03-22 21:38:36.032
 
 -- tables
 -- Table: country
@@ -19,8 +20,8 @@ CREATE TABLE country (
 -- Table: file
 CREATE TABLE file (
     id_file int NOT NULL AUTO_INCREMENT,
-    id_user int NOT NULL,
-    id_folder int NOT NULL,
+    folder_id_folder int NOT NULL,
+    user_id_user int NOT NULL,
     path varchar(255) NOT NULL,
     storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE file (
 -- Table: folder
 CREATE TABLE folder (
     id_folder int NOT NULL AUTO_INCREMENT,
-    id_user int NOT NULL,
+    user_id_user int NOT NULL,
     path varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
@@ -71,7 +72,7 @@ CREATE TABLE language (
 -- Table: output
 CREATE TABLE output (
     id_output int NOT NULL AUTO_INCREMENT,
-    id_file int NOT NULL,
+    file_id_file int NOT NULL,
     status int NOT NULL,
     result varchar(500) NOT NULL,
     tr_id int NULL,
@@ -84,61 +85,61 @@ CREATE TABLE output (
 -- Table: setting
 CREATE TABLE setting (
     id_setting int NOT NULL AUTO_INCREMENT,
-    id_user int NOT NULL,
+    user_id_user int NOT NULL,
     dark_light int NOT NULL,
     audio_feedback int NOT NULL,
     animations int NOT NULL,
     high_contrast int NOT NULL,
     font_size int NOT NULL,
     font_type varchar(50) NOT NULL,
-    tr_id int NOT NULL,
-    tr_date timestamp NOT NULL,
-    tr_user_id int NOT NULL,
-    tr_ip varchar(50) NOT NULL,
+    tr_id int NULL,
+    tr_date timestamp NULL,
+    tr_user_id int NULL,
+    tr_ip varchar(50) NULL,
     CONSTRAINT setting_pk PRIMARY KEY (id_setting)
 );
 
 -- Table: tr_file
 CREATE TABLE tr_file (
     id_file int NOT NULL,
-    id_user int NOT NULL,
-    id_folder int NOT NULL,
+    folder_id_folder int NOT NULL,
+    user_id_user int NOT NULL,
     path varchar(255) NOT NULL,
     storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
-    tr_id int NULL,
+    tr_id int NOT NULL AUTO_INCREMENT,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_file_pk PRIMARY KEY (id_file)
+    CONSTRAINT tr_file_pk PRIMARY KEY (tr_id)
 );
 
 -- Table: tr_folder
 CREATE TABLE tr_folder (
     id_folder int NOT NULL,
-    id_user int NOT NULL,
+    user_id_user int NOT NULL,
     path varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
-    tr_id int NULL,
+    tr_id int NOT NULL AUTO_INCREMENT,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_folder_pk PRIMARY KEY (id_folder)
+    CONSTRAINT tr_folder_pk PRIMARY KEY (tr_id)
 ) COMMENT 'Se crea automaticamente un folder para un usuario nuevo donde se encuentran sus archivos en home.';
 
 -- Table: tr_output
 CREATE TABLE tr_output (
     id_output int NOT NULL,
-    id_file int NOT NULL,
+    file_id_file int NOT NULL,
     status int NOT NULL,
     result varchar(500) NOT NULL,
-    tr_id int NULL,
+    tr_id int NOT NULL AUTO_INCREMENT,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_output_pk PRIMARY KEY (id_output)
+    CONSTRAINT tr_output_pk PRIMARY KEY (tr_id)
 );
 
 -- Table: tr_setting
@@ -151,19 +152,19 @@ CREATE TABLE tr_setting (
     high_contrast int NOT NULL,
     font_size int NOT NULL,
     font_type varchar(50) NOT NULL,
-    tr_id int NOT NULL,
-    tr_date timestamp NOT NULL,
-    tr_user_id int NOT NULL,
-    tr_ip varchar(50) NOT NULL,
-    CONSTRAINT tr_setting_pk PRIMARY KEY (id_setting)
+    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_date timestamp NULL,
+    tr_user_id int NULL,
+    tr_ip varchar(50) NULL,
+    CONSTRAINT tr_setting_pk PRIMARY KEY (tr_id)
 );
 
 -- Table: tr_user
 CREATE TABLE tr_user (
     id_user int NOT NULL,
-    id_country int NOT NULL,
-    id_gender int NOT NULL,
-    id_language int NOT NULL,
+    country_id_country varchar(5) NOT NULL,
+    gender_id_gender int NOT NULL,
+    language_id_language varchar(5) NOT NULL,
     name varchar(50) NULL,
     last_name varchar(50) NULL,
     username varchar(50) NOT NULL,
@@ -171,19 +172,19 @@ CREATE TABLE tr_user (
     password varchar(255) NOT NULL,
     picture varchar(255) NULL,
     status int NOT NULL,
-    tr_id int NULL,
+    tr_id int NOT NULL AUTO_INCREMENT,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_user_pk PRIMARY KEY (id_user)
+    CONSTRAINT tr_user_pk PRIMARY KEY (tr_id)
 );
 
 -- Table: user
 CREATE TABLE user (
     id_user int NOT NULL AUTO_INCREMENT,
-    id_country varchar(5) NOT NULL,
-    id_gender int NOT NULL,
-    id_language varchar(5) NOT NULL,
+    country_id_country varchar(5) NOT NULL,
+    gender_id_gender int NOT NULL,
+    language_id_language varchar(5) NOT NULL,
     name varchar(50) NULL,
     last_name varchar(50) NULL,
     username varchar(50) NOT NULL,
@@ -200,35 +201,35 @@ CREATE TABLE user (
 
 -- foreign keys
 -- Reference: file_folder (table: file)
-ALTER TABLE file ADD CONSTRAINT file_folder FOREIGN KEY file_folder (id_folder)
+ALTER TABLE file ADD CONSTRAINT file_folder FOREIGN KEY file_folder (folder_id_folder)
     REFERENCES folder (id_folder);
 
 -- Reference: file_user (table: file)
-ALTER TABLE file ADD CONSTRAINT file_user FOREIGN KEY file_user (id_user)
+ALTER TABLE file ADD CONSTRAINT file_user FOREIGN KEY file_user (user_id_user)
     REFERENCES user (id_user);
 
 -- Reference: folder_user (table: folder)
-ALTER TABLE folder ADD CONSTRAINT folder_user FOREIGN KEY folder_user (id_user)
+ALTER TABLE folder ADD CONSTRAINT folder_user FOREIGN KEY folder_user (user_id_user)
     REFERENCES user (id_user);
 
 -- Reference: output_file (table: output)
-ALTER TABLE output ADD CONSTRAINT output_file FOREIGN KEY output_file (id_file)
+ALTER TABLE output ADD CONSTRAINT output_file FOREIGN KEY output_file (file_id_file)
     REFERENCES file (id_file);
 
 -- Reference: setting_user (table: setting)
-ALTER TABLE setting ADD CONSTRAINT setting_user FOREIGN KEY setting_user (id_user)
+ALTER TABLE setting ADD CONSTRAINT setting_user FOREIGN KEY setting_user (user_id_user)
     REFERENCES user (id_user);
 
 -- Reference: user_country (table: user)
-ALTER TABLE user ADD CONSTRAINT user_country FOREIGN KEY user_country (id_country)
+ALTER TABLE user ADD CONSTRAINT user_country FOREIGN KEY user_country (country_id_country)
     REFERENCES country (id_country);
 
 -- Reference: user_gender (table: user)
-ALTER TABLE user ADD CONSTRAINT user_gender FOREIGN KEY user_gender (id_gender)
+ALTER TABLE user ADD CONSTRAINT user_gender FOREIGN KEY user_gender (gender_id_gender)
     REFERENCES gender (id_gender);
 
 -- Reference: user_language (table: user)
-ALTER TABLE user ADD CONSTRAINT user_language FOREIGN KEY user_language (id_language)
+ALTER TABLE user ADD CONSTRAINT user_language FOREIGN KEY user_language (language_id_language)
     REFERENCES language (id_language);
 
 -- End of file.

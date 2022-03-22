@@ -9,7 +9,7 @@ Gender.init({
     primaryKey: true,
   },
   gender: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(25),
     allowNull: false
   },
   tr_id: {
@@ -22,7 +22,7 @@ Gender.init({
     type: DataTypes.INTEGER
   },
   tr_ip: {
-    type: DataTypes.TEXT
+    type: DataTypes.STRING(50)
   },
 }, {
   sequelize,

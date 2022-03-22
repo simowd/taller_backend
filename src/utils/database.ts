@@ -10,13 +10,16 @@ const sequelize = new Sequelize(MYSQLDB_URI, {
       rejectUnauthorized: false
     }
   },
+  define: {
+    //Make all tables use the default name
+    freezeTableName: true,
+  }
 });
 
 export const databaseCheck = async () => {
   try {
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
-    sequelize.close();
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }

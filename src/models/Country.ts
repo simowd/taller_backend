@@ -5,11 +5,11 @@ class Country extends Model {}
 
 Country.init({
   id_country: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(5),
     primaryKey: true,
   },
   country: {
-    type: DataTypes.TEXT,
+    type: DataTypes.STRING(255),
     allowNull: false
   },
   tr_id: {
@@ -22,7 +22,7 @@ Country.init({
     type: DataTypes.INTEGER
   },
   tr_ip: {
-    type: DataTypes.TEXT
+    type: DataTypes.STRING(50)
   },
 }, {
   sequelize,
