@@ -11,11 +11,11 @@ User.init({
   },
   name: {
     type: DataTypes.STRING(50),
-    allowNull: false
+    allowNull: true
   },
   last_name: {
     type: DataTypes.STRING(50),
-    allowNull: false
+    allowNull: true
   },
   username: {
     type: DataTypes.STRING(50),
@@ -31,7 +31,7 @@ User.init({
   },
   picture: {
     type: DataTypes.STRING(255),
-    allowNull: false
+    allowNull: true
   },
   status: {
     type: DataTypes.INTEGER,

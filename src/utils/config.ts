@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import 'app-root-path';
 
 const getEnvironmentVariable = (env: string): string => {
   const variable = process.env[env];

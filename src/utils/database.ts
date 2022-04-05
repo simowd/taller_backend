@@ -4,6 +4,7 @@ import { Sequelize } from 'sequelize';
 console.log(`Connecting to ${MYSQLDB_URI}`);
 
 const sequelize = new Sequelize(MYSQLDB_URI, {
+  logging: console.log,
   dialectOptions: {
     ssl: {
       require: true,
