@@ -3,6 +3,8 @@ import app from '../app';
 import { User } from '../models/index';
 import sequelize from '../utils/database';
 import { createUsers } from '../utils/testSetup';
+import fs from 'fs-extra';
+import { path as appRoot } from 'app-root-path';
 
 const api = supertest(app);
 
@@ -13,7 +15,7 @@ beforeAll(async () => {
     for(const user of createUsers) {
       await api.post('/api/v1/users').field(user).attach('avatar', `${__dirname}/media/user.png`);
     }
-    
+
     console.log('User data has been re-created');
   }
   catch (e: unknown) {
@@ -39,4 +41,6 @@ describe('[/api/v1/login] Test user endpoints', () => {
 
 afterAll(async () => {
   await sequelize.close();
+  await fs.emptyDir(`${appRoot}/public/images/`);
+  console.log('Deleted image files');
 });
