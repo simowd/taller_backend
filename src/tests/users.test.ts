@@ -12,7 +12,7 @@ beforeAll(async () => {
   try {
     await User.destroy({ where: {} });
     await sequelize.query('ALTER TABLE user AUTO_INCREMENT = 1;');
-    for(const user of createUsers) {
+    for (const user of createUsers) {
       await api.post('/api/v1/users').field(user).attach('avatar', `${__dirname}/media/user.png`);
     }
     console.log('User data has been re-created');
@@ -30,7 +30,7 @@ describe('[/api/v1/users] Test user endpoints', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test('Get one user from (GET)[/api/v1/users]',async () => {
+  test('Get one user from (GET)[/api/v1/users]', async () => {
     const response = await api.get('/api/v1/users');
     expect(response.body.length).toBe(2);
   });
@@ -47,9 +47,44 @@ describe('[/api/v1/users] Test user endpoints', () => {
       id_gender: 2,
     };
 
+    //Send the data and attach picture
     const response = await api.post('/api/v1/users').field(userRequest).attach('avatar', `${__dirname}/media/user.png`);
     expect(response.statusCode).toBe(200);
     expect(response.body.username).toBe('jestabc123');
+  });
+
+  test('Change password for a user (PUT)[/api/v1/users/password]', async () => {
+    
+    //Setup User information
+    const userData = {
+      username: 'ana123',
+      password: 'anita:O'
+    };
+
+    const changePassword = {
+      old_password: 'anita:O',
+      new_password: 'anita'
+    };
+
+    //Login user onto the system
+    const loginUser = await api.post('/api/v1/login').send(userData);
+    //change password and attach token
+    const response = await api.put('/api/v1/users/password').send(changePassword).set('Authorization', loginUser.body.token.token);
+
+    expect(response.statusCode).toBe(204);
+    
+    //Login with old password and expect it to fail
+    const failedLoginUser = await api.post('/api/v1/login').send(userData);
+    expect(failedLoginUser.statusCode).not.toBe(200);
+
+    //Setup New user information and login
+    const newUserData = {
+      username: 'ana123',
+      password: 'anita'
+    };
+    const successfulLogin = await api.post('/api/v1/login').send(newUserData);
+    expect(successfulLogin.statusCode).toBe(200);
+    expect(successfulLogin.body.success).toBeTruthy();
   });
 });
 
