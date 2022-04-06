@@ -33,6 +33,20 @@ userRouter.get('/:id', async (req, res, next) => {
   }
 });
 
+//Get all users
+userRouter.get('/', async (_req, res, next) => {
+  try{
+    const allUsers = await User.findAll({ where: {} });
+    res.status(200).send(allUsers);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+
+});
+
+//Post a new user
 userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
   try {
     const newUserRequest: NewUser = toNewUser(req.body);
@@ -63,6 +77,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     //create the new user
     const newUser = await User.create({...newUserRequest, picture: picturePath, status: 1,});
     const filteredUser = _.omit(newUser.toJSON(), ignoredFields);
+    
     res.status(200).send(filteredUser);
   }
   catch (error: unknown) {
@@ -71,7 +86,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
         unlink(req.file?.path, (err) => {
           if (err) console.log(err);
         });
-      }    
+      }
       next(error);
     }
   }

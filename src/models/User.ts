@@ -1,7 +1,22 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import sequelize from '../utils/database';
 
-class User extends Model {}
+class User extends Model <InferAttributes<User>, InferCreationAttributes<User>> {
+
+  declare id_user: CreationOptional<number>;
+  declare name: string | null;
+  declare last_name: string | null;
+  declare username: string;
+  declare email: string;
+  declare password: string;
+  declare picture:  string | null;
+  declare status: number;
+  declare tr_id: number | null;
+  declare tr_date: Date | null;
+  declare tr_user_id: number | null;
+  declare tr_ip: string | null;
+
+}
 
 User.init({
   id_user: {

@@ -1,10 +1,17 @@
-import { MYSQLDB_URI } from '../utils/config';
+import { MYSQLDB_URI, NODE_ENV } from '../utils/config';
 import { Sequelize } from 'sequelize';
 
 console.log(`Connecting to ${MYSQLDB_URI}`);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let loggingOption: any = false;
+
+if(NODE_ENV === 'dev'){
+  loggingOption = console.log;
+}
+
 const sequelize = new Sequelize(MYSQLDB_URI, {
-  logging: console.log,
+  logging: loggingOption,
   dialectOptions: {
     ssl: {
       require: true,

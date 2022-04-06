@@ -11,5 +11,7 @@ const getEnvironmentVariable = (env: string): string => {
 
 const PORT: string = getEnvironmentVariable('PORT');
 const MYSQLDB_URI = getEnvironmentVariable('NODE_ENV') === 'test' ? getEnvironmentVariable('TEST_MYSQL_URI') : getEnvironmentVariable('MYSQL_URI');
+const NODE_ENV = getEnvironmentVariable('NODE_ENV');
+const SECRET = getEnvironmentVariable('SECRET');
 
-export { PORT, MYSQLDB_URI };
+export { PORT, MYSQLDB_URI, NODE_ENV, SECRET };
