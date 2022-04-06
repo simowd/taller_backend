@@ -13,21 +13,36 @@ interface NewUser {
   language_id_language: string
 }
 
+interface ChangePassword {
+  old_password: string,
+  new_password: string
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const toNewUser = (user: any): NewUser => {
   const newUser: NewUser = {
     name: user.name,
     last_name: user.last_name,
-    username: parseString(user.username, _.findKey(user, user.username)),
-    email: parseString(user.email, _.findKey(user, user.email)),
-    password: parseString(user.password, _.findKey(user, user.password)),
+    username: parseString(user.username, 'username'),
+    email: parseString(user.email, 'email'),
+    password: parseString(user.password, 'password'),
     avatar: user.avatar,
-    country_id_country: parseString(user.id_country, _.findKey(user, user.id_country)),
-    gender_id_gender: parseNumber(user.id_gender, _.findKey(user, user.id_gender)),
-    language_id_language: parseString(user.id_language, _.findKey(user, user.id_language))
+    country_id_country: parseString(user.id_country, 'id_country'),
+    gender_id_gender: parseNumber(user.id_gender, 'id_gender'),
+    language_id_language: parseString(user.id_language, 'id_language')
 
   };
   return newUser;
 };
 
-export { NewUser, toNewUser};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const toChangePasswordRequest = (request: any) => {
+  const newPassword: ChangePassword = {
+    old_password: parseString(request.old_password, 'old_password'),
+    new_password: parseString(request.new_password, 'new_password'),
+  };
+  return newPassword;
+};
+
+export { NewUser, ChangePassword, toNewUser, toChangePasswordRequest};

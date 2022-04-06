@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "build:bundle": "etsc",
     "dev": "NODE_ENV=dev ts-node-dev index.ts",
     "lint": "eslint --ext .ts .",
     "test": "NODE_ENV=test jest --verbose --runInBand --forceExit --detectOpenHandles",
@@ -54,6 +55,7 @@
     "jest": "^27.5.1",
     "supertest": "^6.2.2",
     "ts-jest": "^27.1.4",
+    "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.6.3"
