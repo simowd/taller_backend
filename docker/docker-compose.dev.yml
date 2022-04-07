@@ -10,6 +10,8 @@ services:
       - ../mysql_data:/var/lib/mysql
     ports:
       - 3306:3306
+    networks:
+      - backend
   backend:
     image: taller-grado-backend
     build:
@@ -20,5 +22,12 @@ services:
     volumes:
       - ../:/usr/src/app
     ports:
-      - 3000:3000
-  
+      - 3003:3003
+    networks:
+      - backend
+      - frontend
+networks:
+  backend:
+    name: backend
+  frontend:
+    name: frontend
