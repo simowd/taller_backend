@@ -39,7 +39,7 @@ loginRouter.post('/', async (req, res, next) => {
     if (isPasswordCorrect) {
       const token = issueJWT(user);
 
-      res.status(200).send({ success: true, token: token, expires_in: token.expires });
+      res.status(200).send({ success: true, token: token, user_id: user.id_user });
     }
     else {
       res.status(401).send({ success: false, error: 'Password is incorrect' });
