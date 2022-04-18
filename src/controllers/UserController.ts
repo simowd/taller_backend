@@ -11,7 +11,7 @@ const userRouter = Router();
 
 //bcrypt hash rounds
 const saltRounds = 10;
-const ignoredFields = ['tr_id', 'tr_date', 'tr_user_id', 'tr_ip', 'password', 'status'];
+const ignoredFields = ['countryIdCountry', 'genderIdGender', 'languageIdLanguage', 'tr_id', 'tr_date', 'tr_user_id', 'tr_ip', 'password', 'status'];
 
 //Get user information
 userRouter.get('/:id', async (req, res, next) => {
@@ -38,7 +38,10 @@ userRouter.get('/:id', async (req, res, next) => {
 userRouter.get('/', async (_req, res, next) => {
   try {
     const allUsers = await User.findAll({ where: {} });
-    res.status(200).send(allUsers);
+    const filteredUsers = allUsers.map((user) => {
+      return _.omit(user.toJSON(), ignoredFields);
+    });
+    res.status(200).send(filteredUsers);
   } catch (error: unknown) {
     if (error instanceof Error) {
       next(error);
@@ -93,7 +96,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
 });
 
 //Put (Update) already created user password (Require jwt)
-userRouter.put('/password', passport.authenticate('jwt', {session: false}) ,async (req, res, next) => {
+userRouter.put('/password', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   try {
     const body = req.body;
     const changePassword: ChangePassword = toChangePasswordRequest(req.body);
@@ -104,8 +107,8 @@ userRouter.put('/password', passport.authenticate('jwt', {session: false}) ,asyn
 
     const isPasswordCorrect = user === null ? false : await bcrypt.compare(body.old_password, user.password);
 
-    if(!isPasswordCorrect){
-      res.status(403).send({ error: 'password is not correct'});
+    if (!isPasswordCorrect) {
+      res.status(403).send({ error: 'password is not correct' });
     }
 
     const newHashedPassword = await bcrypt.hash(body.new_password, saltRounds);
