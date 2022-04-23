@@ -1,5 +1,6 @@
 import { MYSQLDB_URI, NODE_ENV } from '../utils/config';
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { path as appRoot } from 'app-root-path';
 
 console.log(`Connecting to ${MYSQLDB_URI}`);
 
@@ -21,8 +22,10 @@ const sequelize = new Sequelize(MYSQLDB_URI, {
   define: {
     //Make all tables use the default name
     freezeTableName: true,
-  }
+  },
 });
+
+sequelize.addModels([`${appRoot}/src/models`]);
 
 export const databaseCheck = async () => {
   try {

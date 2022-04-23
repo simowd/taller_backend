@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { User } from '../models/index';
 import _ from 'lodash';
 import { imageUploader } from '../utils/upload';
 import { ChangePassword, NewUser, toChangePasswordRequest, toNewUser } from '../types/user';
 import bcrypt from 'bcrypt';
 import { unlink } from 'fs';
 import passport from 'passport';
+import User from '../models/User';
 
 const userRouter = Router();
 

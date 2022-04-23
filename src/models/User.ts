@@ -1,74 +1,68 @@
-import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import sequelize from '../utils/database';
+import { BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import Country from './Country';
+import Gender from './Gender';
+import Language from './Language';
 
-class User extends Model <InferAttributes<User>, InferCreationAttributes<User>> {
+@Table({tableName: 'user', timestamps: false})
+class User extends Model {
+  @PrimaryKey
+  @Column
+    id_user: number;
 
-  declare id_user: CreationOptional<number>;
-  declare name: string | null;
-  declare last_name: string | null;
-  declare username: string;
-  declare email: string;
-  declare password: string;
-  declare picture:  string | null;
-  declare status: number;
-  declare tr_id: number | null;
-  declare tr_date: Date | null;
-  declare tr_user_id: number | null;
-  declare tr_ip: string | null;
+  @ForeignKey(() => Country)
+  @Column
+    country_id_country: string;
+
+  @ForeignKey(() => Language)
+  @Column
+    language_id_language: string;
+
+  @ForeignKey(() => Gender)
+  @Column
+    gender_id_gender: number;
+
+  @Column(DataType.STRING(50))
+    name: string;
+
+  @Column(DataType.STRING(50))
+    last_name: string;
+
+  @Column(DataType.STRING(50))
+    username: string;
+
+  @Column(DataType.STRING(100))
+    email: string;
+
+  @Column(DataType.STRING(255))
+    password: string;
+
+  @Column(DataType.STRING(255))
+    picture: string;
+
+  @Column(DataType.INTEGER)
+    status: number;
+
+  @Column(DataType.INTEGER)
+    tr_id: number;
+
+  @Column
+    tr_date: Date;
+
+  @Column(DataType.INTEGER)
+    tr_user_id: number;
+
+  @Column(DataType.STRING(50))
+    tr_ip: string;
+
+  @BelongsTo(() => Country)
+    country: Country;
+
+  @BelongsTo(() => Language)
+    language: Language;
+
+  @BelongsTo(() => Gender)
+    gender: Gender;
 
 }
-
-User.init({
-  id_user: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  name: {
-    type: DataTypes.STRING(50),
-    allowNull: true
-  },
-  last_name: {
-    type: DataTypes.STRING(50),
-    allowNull: true
-  },
-  username: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  email: {
-    type: DataTypes.STRING(100),
-    allowNull: false
-  },
-  password: {
-    type: DataTypes.STRING(255),
-    allowNull: false
-  },
-  picture: {
-    type: DataTypes.STRING(255),
-    allowNull: true
-  },
-  status: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  tr_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_date: {
-    type: DataTypes.TIME
-  },
-  tr_user_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_ip: {
-    type: DataTypes.STRING(50)
-  },
-}, {
-  sequelize,
-  underscored: true,
-  timestamps: false,
-  modelName: 'user',
-});
 
 export default User;

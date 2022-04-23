@@ -1,34 +1,29 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../utils/database';
+import { Column, DataType, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import User from './User';
 
-class Gender extends Model {}
+@Table({tableName: 'gender', timestamps: false})
+class Gender extends Model {
+  @PrimaryKey
+  @Column(DataType.INTEGER)
+    id_gender: number;
 
-Gender.init({
-  id_gender: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-  },
-  gender: {
-    type: DataTypes.STRING(25),
-    allowNull: false
-  },
-  tr_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_date: {
-    type: DataTypes.TIME
-  },
-  tr_user_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_ip: {
-    type: DataTypes.STRING(50)
-  },
-}, {
-  sequelize,
-  underscored: true,
-  timestamps: false,
-  modelName: 'gender'
-});
+  @Column(DataType.STRING(25))
+    gender: string;
+
+  @Column(DataType.INTEGER)
+    tr_id: number;
+
+  @Column
+    tr_date: Date;
+
+  @Column(DataType.INTEGER)
+    tr_user_id: number;
+
+  @Column(DataType.STRING(50))
+    tr_ip: string;
+
+  @HasMany(() => User)
+    users: User[];
+}
 
 export default Gender;

@@ -1,6 +1,6 @@
 import { PassportStatic } from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { User } from '../models';
+import User from '../models/User';
 import { SECRET } from './config';
 
 //Define passport-jwt options

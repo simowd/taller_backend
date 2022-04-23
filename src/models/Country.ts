@@ -1,34 +1,29 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../utils/database';
+import { Column, DataType, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import User from './User';
 
-class Country extends Model {}
+@Table(({tableName: 'country', timestamps: false}))
+class Country extends Model {
+  @PrimaryKey
+  @Column(DataType.STRING(5))
+    id_country: string;
 
-Country.init({
-  id_country: {
-    type: DataTypes.STRING(5),
-    primaryKey: true,
-  },
-  country: {
-    type: DataTypes.STRING(255),
-    allowNull: false
-  },
-  tr_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_date: {
-    type: DataTypes.TIME
-  },
-  tr_user_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_ip: {
-    type: DataTypes.STRING(50)
-  },
-}, {
-  sequelize,
-  underscored: true,
-  timestamps: false,
-  modelName: 'country'
-});
+  @Column(DataType.STRING(255))
+    country: string;
+
+  @Column(DataType.INTEGER)
+    tr_id: number;
+
+  @Column
+    tr_date: Date;
+
+  @Column(DataType.INTEGER)
+    tr_user_id: number;
+
+  @Column(DataType.STRING(50))
+    tr_ip: string;
+
+  @HasMany(() => User)
+    users: User[];
+}
 
 export default Country;

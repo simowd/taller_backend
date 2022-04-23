@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { User } from '../models/index';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { SECRET } from '../utils/config';
+import User from '../models/User';
 
 const loginRouter = Router();
 
@@ -38,8 +38,7 @@ loginRouter.post('/', async (req, res, next) => {
 
     if (isPasswordCorrect) {
       const token = issueJWT(user);
-
-      res.status(200).send({ success: true, token: token, user_id: user.id_user });
+      res.status(200).send({ success: true, token: token, user_id: user.id_user, locale: user.language_id_language });
     }
     else {
       res.status(401).send({ success: false, error: 'Password is incorrect' });

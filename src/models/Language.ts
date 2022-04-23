@@ -1,34 +1,29 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../utils/database';
+import { Column, DataType, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import User from './User';
 
-class Language extends Model {}
+@Table({tableName: 'language'})
+class Language extends Model {
+  @PrimaryKey
+  @Column(DataType.STRING(5))
+    id_language: string;
 
-Language.init({
-  id_language: {
-    type: DataTypes.STRING(5),
-    primaryKey: true,
-  },
-  language: {
-    type: DataTypes.STRING(255),
-    allowNull: false
-  },
-  tr_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_date: {
-    type: DataTypes.TIME
-  },
-  tr_user_id: {
-    type: DataTypes.INTEGER
-  },
-  tr_ip: {
-    type: DataTypes.STRING(50)
-  },
-}, {
-  sequelize,
-  underscored: true,
-  timestamps: false,
-  modelName: 'language'
-});
+  @Column(DataType.STRING(255))
+    language: string;
+
+  @Column(DataType.INTEGER)
+    tr_id: number;
+
+  @Column
+    tr_date: Date;
+
+  @Column(DataType.INTEGER)
+    tr_user_id: number;
+
+  @Column(DataType.STRING(50))
+    tr_ip: string;
+
+  @HasMany(() => User)
+    users: User[];
+}
 
 export default Language;
