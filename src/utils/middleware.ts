@@ -42,7 +42,7 @@ const validUser = async (socket: Socket, next: (err?: ExtendedError | undefined)
       const id: string = decodedToken.sub as string;
       const user = await User.findByPk(id);
       if (user) {
-        console.log('Ingresa');
+        socket.data.user_id = id;
         next();
       }
     }
