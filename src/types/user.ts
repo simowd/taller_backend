@@ -1,5 +1,4 @@
 import { parseNumber, parseString } from '../utils/parsers';
-import _ from 'lodash';
 
 interface NewUser {
   name?: string,
