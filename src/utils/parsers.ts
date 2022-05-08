@@ -12,16 +12,16 @@ const parseString = (content: unknown, key?: string | undefined): string => {
 
 //Number parser
 const isNumber = (number: unknown): number is number => {
-  const stringNumber: string = parseString(number);
+  const stringNumber = String(number);
   const parsedNumber: number = parseInt(stringNumber);
   return typeof parsedNumber === 'number';
 };
 
 const parseNumber = (content: unknown , key?: string | undefined): number => {
-  if (!content || !isNumber(content)) {
+  if (content === undefined|| !isNumber(content)) {
     throw new Error('On property [' + key +']. Incorrect or missing number ' + content);
   }
-  const stringNumber: string = parseString(content);
+  const stringNumber = String(content);
   const parsedNumber: number = parseInt(stringNumber);
   return parsedNumber;
 };
