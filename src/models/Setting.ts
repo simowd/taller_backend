@@ -32,8 +32,8 @@ class Setting extends Model {
   @Column
     font_type: string;
 
-  @Column(DataType.INTEGER)
-    tr_id: number;
+  @Column(DataType.STRING(255))
+    tr_id: string;
 
   @Column
     tr_date: Date;

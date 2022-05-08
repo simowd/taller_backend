@@ -12,10 +12,21 @@ declare global {
       password: string;
       picture: string | null;
       status: number;
-      tr_id: number | null;
+      tr_id: string | null;
       tr_date: Date | null;
       tr_user_id: number | null;
       tr_ip: string | null;
+    }
+
+    interface Transaction {
+      tr_id?: string | null;
+      tr_date?: Date | null;
+      tr_user_id?: number | null;
+      tr_ip?: string | null;
+    }
+
+    interface Request {
+      transaction?: Transaction;
     }
   }
 }

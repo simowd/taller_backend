@@ -10,8 +10,8 @@ class Country extends Model {
   @Column(DataType.STRING(255))
     country: string;
 
-  @Column(DataType.INTEGER)
-    tr_id: number;
+  @Column(DataType.STRING(255))
+    tr_id: string;
 
   @Column
     tr_date: Date;

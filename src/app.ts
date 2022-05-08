@@ -2,7 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { databaseCheck } from './utils/database';
-import { errorLogger, unknownEndpoint } from './utils/middleware';
+import { buildTransaction, errorLogger, unknownEndpoint } from './utils/middleware';
 import { path as pathRoot} from 'app-root-path';
 import userRouter from './controllers/UserController';
 import { NODE_ENV } from './utils/config';
@@ -24,6 +24,9 @@ app.use(express.json());
 //Initialize passport
 passportBuilder(passport);
 app.use(passport.initialize());
+
+//More middleware
+app.use(buildTransaction);
 
 //Serve public path for local development
 if(NODE_ENV === 'dev'){

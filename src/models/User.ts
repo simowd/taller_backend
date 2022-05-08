@@ -42,8 +42,8 @@ class User extends Model {
   @Column(DataType.INTEGER)
     status: number;
 
-  @Column(DataType.INTEGER)
-    tr_id: number;
+  @Column(DataType.STRING(255))
+    tr_id: string;
 
   @Column
     tr_date: Date;

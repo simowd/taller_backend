@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { SECRET } from './config';
 import { ExtendedError } from 'socket.io/dist/namespace';
 import User from '../models/User';
+import { v4 as uuidv4 } from 'uuid';
 //import User from '../models/User';
 
 const errorLogger = (err: Error, _req: Request, res: Response, next: NextFunction) => {
@@ -18,6 +19,15 @@ const errorLogger = (err: Error, _req: Request, res: Response, next: NextFunctio
 
 const unknownEndpoint = (_req: Request, res: Response) => {
   res.status(404).send({ error: 'Unknown Endpoint' });
+};
+
+const buildTransaction = (req: Request, _res: Response) => {
+  req.transaction = {
+    tr_id: uuidv4(),
+    tr_date: new Date(Date.now()),
+    tr_user_id: req.user?.id_user,
+    tr_ip: req.ip
+  };
 };
 
 const validUser = async (socket: Socket, next: (err?: ExtendedError | undefined) => void) => {
@@ -52,4 +62,4 @@ const validUser = async (socket: Socket, next: (err?: ExtendedError | undefined)
   }
 };
 
-export { errorLogger, unknownEndpoint, validUser };
+export { errorLogger, unknownEndpoint, validUser, buildTransaction };
