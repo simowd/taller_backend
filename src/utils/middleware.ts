@@ -21,13 +21,14 @@ const unknownEndpoint = (_req: Request, res: Response) => {
   res.status(404).send({ error: 'Unknown Endpoint' });
 };
 
-const buildTransaction = (req: Request, _res: Response) => {
+const buildTransaction = (req: Request, _res: Response, next: NextFunction) => {
   req.transaction = {
     tr_id: uuidv4(),
     tr_date: new Date(Date.now()),
     tr_user_id: req.user?.id_user,
     tr_ip: req.ip
   };
+  next();
 };
 
 const validUser = async (socket: Socket, next: (err?: ExtendedError | undefined) => void) => {

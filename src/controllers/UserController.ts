@@ -78,7 +78,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     newUserRequest.password = hashedPassword;
 
     //create the new user
-    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, });
+    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction});
     const filteredUser = _.omit(newUser.toJSON(), ignoredFields);
 
     res.status(200).send(filteredUser);
@@ -101,7 +101,7 @@ userRouter.put('/', passport.authenticate('jwt', { session: false }), async (req
     const body = req.body;
     const user = req.user;
 
-    await User.update(body, {where: { id_user: user?.id_user}});
+    await User.update({ ...body, ...req.transaction, tr_user_id: req.user?.id_user}, {where: { id_user: user?.id_user}});
 
     res.status(204).send();
   }
@@ -129,7 +129,7 @@ userRouter.put('/password', passport.authenticate('jwt', { session: false }), as
 
     const newHashedPassword = await bcrypt.hash(body.new_password, saltRounds);
 
-    await User.update({ password: newHashedPassword }, {
+    await User.update({ password: newHashedPassword, ...req.transaction, tr_user_id: req.user?.id_user }, {
       where: {
         id_user: user.id_user
       }
