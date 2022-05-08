@@ -46,4 +46,4 @@ class Setting extends Model {
 
 }
 
-export default User;
+export default Setting;

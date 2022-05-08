@@ -102,7 +102,6 @@ userRouter.put('/password', passport.authenticate('jwt', { session: false }), as
     const changePassword: ChangePassword = toChangePasswordRequest(req.body);
     console.log(changePassword);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const user = req.user!;
 
     const isPasswordCorrect = user === null ? false : await bcrypt.compare(body.old_password, user.password);

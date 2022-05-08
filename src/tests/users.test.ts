@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import app from '../app';
-import { User } from '../models/index';
+import User  from '../models/User';
 import sequelize from '../utils/database';
 import { createUsers } from '../utils/testSetup';
 import fs from 'fs-extra';

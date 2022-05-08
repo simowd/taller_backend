@@ -1,7 +1,7 @@
 USE taller;
 ALTER DATABASE taller CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-03-22 21:38:36.032
+-- Last modification date: 2022-05-08 19:57:41.309
 
 -- tables
 -- Table: country
@@ -99,6 +99,7 @@ CREATE TABLE setting (
 
 -- Table: tr_file
 CREATE TABLE tr_file (
+    tr_file_id int NOT NULL AUTO_INCREMENT,
     id_file int NOT NULL,
     folder_id_folder int NOT NULL,
     user_id_user int NOT NULL,
@@ -106,42 +107,45 @@ CREATE TABLE tr_file (
     storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
-    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_id int NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_file_pk PRIMARY KEY (tr_id)
+    CONSTRAINT tr_file_pk PRIMARY KEY (tr_file_id)
 );
 
 -- Table: tr_folder
 CREATE TABLE tr_folder (
+    tr_folder_id int NOT NULL AUTO_INCREMENT,
     id_folder int NOT NULL,
     user_id_user int NOT NULL,
     path varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
-    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_id int NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_folder_pk PRIMARY KEY (tr_id)
+    CONSTRAINT tr_folder_pk PRIMARY KEY (tr_folder_id)
 ) COMMENT 'Se crea automaticamente un folder para un usuario nuevo donde se encuentran sus archivos en home.';
 
 -- Table: tr_output
 CREATE TABLE tr_output (
+    tr_output_id int NOT NULL,
     id_output int NOT NULL,
     file_id_file int NOT NULL,
     status int NOT NULL,
     result varchar(500) NOT NULL,
-    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_id int NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_output_pk PRIMARY KEY (tr_id)
+    CONSTRAINT tr_output_pk PRIMARY KEY (tr_output_id)
 );
 
 -- Table: tr_setting
 CREATE TABLE tr_setting (
+    tr_setting_id int NOT NULL AUTO_INCREMENT,
     id_setting int NOT NULL,
     user_id_user int NOT NULL,
     dark_light int NOT NULL,
@@ -150,15 +154,16 @@ CREATE TABLE tr_setting (
     high_contrast int NOT NULL,
     font_size int NOT NULL,
     font_type varchar(50) NOT NULL,
-    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_id int NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_setting_pk PRIMARY KEY (tr_id)
+    CONSTRAINT tr_setting_pk PRIMARY KEY (tr_setting_id)
 );
 
 -- Table: tr_user
 CREATE TABLE tr_user (
+    tr_id_user int NOT NULL AUTO_INCREMENT,
     id_user int NOT NULL,
     country_id_country varchar(5) NOT NULL,
     gender_id_gender int NOT NULL,
@@ -170,11 +175,11 @@ CREATE TABLE tr_user (
     password varchar(255) NOT NULL,
     picture varchar(255) NULL,
     status int NOT NULL,
-    tr_id int NOT NULL AUTO_INCREMENT,
+    tr_id int NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
     tr_ip varchar(50) NULL,
-    CONSTRAINT tr_user_pk PRIMARY KEY (tr_id)
+    CONSTRAINT tr_user_pk PRIMARY KEY (tr_id_user)
 );
 
 -- Table: user
