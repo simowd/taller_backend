@@ -95,6 +95,23 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
   }
 });
 
+//Update user information (Requiere jwt)
+userRouter.put('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const body = req.body;
+    const user = req.user;
+
+    await User.update(body, {where: { id_user: user?.id_user}});
+
+    res.status(204).send();
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
+
 //Put (Update) already created user password (Require jwt)
 userRouter.put('/password', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   try {
