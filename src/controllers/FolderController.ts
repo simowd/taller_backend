@@ -91,13 +91,24 @@ folderRouter.post('/', passport.authenticate('jwt', { session: false }), async (
 });
 
 //Delete project
-folderRouter.delete('/:id', async (req, res, next) => {
+folderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   try {
     const id = req.params.id;
-    if (id) {
-      await Folder.update({ status: 0 }, { where: { id_folder: id } });
+    const folder = await Folder.findByPk(id);
+    if (folder) {
+      if (folder.user_id_user === req.user?.id_user) {
+        if (id) {
+          await Folder.update({ status: 0 }, { where: { id_folder: id } });
 
-      res.status(204).send();
+          res.status(204).send();
+        }
+      }
+      else {
+        res.status(401).send('Unauthorized');
+      }
+    }
+    else {
+      res.status(404).send();
     }
   }
   catch (error: unknown) {
@@ -106,5 +117,25 @@ folderRouter.delete('/:id', async (req, res, next) => {
     }
   }
 });
+
+// folderRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+//   try {
+//     const id = req.params.id;
+//     const body = req.body;
+
+//     const updatedFolder = toNewFolder(body);
+
+//     if (id && updatedFolder) {
+//       await Folder.update({ status: 0 }, { where: { id_folder: id } });
+
+//       res.status(204).send();
+//     }
+//   }
+//   catch (error: unknown) {
+//     if (error instanceof Error) {
+//       next(error);
+//     }
+//   }
+// });
 
 export default folderRouter;
