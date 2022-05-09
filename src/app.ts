@@ -10,6 +10,7 @@ import passport from 'passport';
 import { passportBuilder } from './utils/passport';
 import loginRouter from './controllers/LoginController';
 import settingsRouter from './controllers/SettingsController';
+import folderRouter from './controllers/FolderController';
 
 const app = express();
 
@@ -37,6 +38,7 @@ if(NODE_ENV === 'dev'){
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/settings', passport.authenticate('jwt', { session: false }), settingsRouter);
+app.use('/api/v1/projects', folderRouter);
 
 //Adding the middleware created
 app.use(unknownEndpoint);

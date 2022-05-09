@@ -14,6 +14,7 @@
   "author": "Martin Campuzano Flores",
   "license": "ISC",
   "dependencies": {
+    "@azure/storage-blob": "^12.9.0",
     "@socket.io/admin-ui": "^0.2.0",
     "@types/app-root-path": "^1.2.4",
     "@types/bcrypt": "^5.0.0",

@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { unlink } from 'fs';
 import passport from 'passport';
 import User from '../models/User';
+import blobServiceClient from '../utils/azure_blob';
 
 const userRouter = Router();
 
@@ -78,13 +79,21 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     newUserRequest.password = hashedPassword;
 
     //create the new user
-    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction});
+    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction}, { returning: true });
+
+    const containerClient = await blobServiceClient.getContainerClient(String(newUser.id_user));
+
+    const containerResponse = await containerClient.createIfNotExists();
+
+    console.log(containerResponse);
+
     const filteredUser = _.omit(newUser.toJSON(), ignoredFields);
 
     res.status(200).send(filteredUser);
   }
   catch (error: unknown) {
     if (error instanceof Error) {
+      console.log(error);
       if (req.file?.path) {
         unlink(req.file?.path, (err) => {
           if (err) console.log(err);

@@ -1,11 +1,13 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import Country from './Country';
+import Folder from './Folder';
 import Gender from './Gender';
 import Language from './Language';
 
 @Table({tableName: 'user', timestamps: false})
 class User extends Model {
   @PrimaryKey
+  @AutoIncrement
   @Column
     id_user: number;
 
@@ -62,7 +64,9 @@ class User extends Model {
 
   @BelongsTo(() => Gender)
     gender: Gender;
-
+  
+  @HasMany(() => Folder)
+    folders: Folder[];
 }
 
 export default User;

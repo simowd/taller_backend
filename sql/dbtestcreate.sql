@@ -3,7 +3,7 @@ ALTER DATABASE testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON testing.* TO 'admin'@'%';
 USE testing;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-05-08 21:12:10.95
+-- Last modification date: 2022-05-09 14:59:56.603
 
 -- tables
 -- Table: country
@@ -20,8 +20,9 @@ CREATE TABLE country (
 -- Table: file
 CREATE TABLE file (
     id_file int NOT NULL AUTO_INCREMENT,
-    folder_id_folder int NOT NULL,
+    folder_id_folder int NULL,
     user_id_user int NOT NULL,
+    file_name varchar(255) NOT NULL,
     path varchar(255) NOT NULL,
     storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
@@ -37,7 +38,9 @@ CREATE TABLE file (
 CREATE TABLE folder (
     id_folder int NOT NULL AUTO_INCREMENT,
     user_id_user int NOT NULL,
+    folder_name varchar(255) NOT NULL,
     path varchar(255) NOT NULL,
+    storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
     tr_id varchar(255) NULL,
@@ -105,6 +108,7 @@ CREATE TABLE tr_file (
     id_file int NOT NULL,
     folder_id_folder int NOT NULL,
     user_id_user int NOT NULL,
+    file_name varchar(255) NOT NULL,
     path varchar(255) NOT NULL,
     storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
@@ -121,7 +125,9 @@ CREATE TABLE tr_folder (
     tr_folder_id int NOT NULL AUTO_INCREMENT,
     id_folder int NOT NULL,
     user_id_user int NOT NULL,
+    folder_name varchar(255) NOT NULL,
     path varchar(255) NOT NULL,
+    storage varchar(255) NOT NULL,
     creation_date timestamp NOT NULL,
     private bool NOT NULL,
     tr_id varchar(255) NULL,
@@ -236,5 +242,7 @@ ALTER TABLE user ADD CONSTRAINT user_gender FOREIGN KEY user_gender (gender_id_g
 -- Reference: user_language (table: user)
 ALTER TABLE user ADD CONSTRAINT user_language FOREIGN KEY user_language (language_id_language)
     REFERENCES language (id_language);
+
+ALTER TABLE user AUTO_INCREMENT = 100;
 
 -- End of file.
