@@ -94,10 +94,14 @@ folderRouter.post('/', passport.authenticate('jwt', { session: false }), async (
 folderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   try {
     const id = req.params.id;
+    //Find if the folder exists
     const folder = await Folder.findByPk(id);
     if (folder) {
+      //Verify that the logged user owns the folder
       if (folder.user_id_user === req.user?.id_user) {
+        //verify that there's a param
         if (id) {
+          //update the resource
           await Folder.update({ status: 0 }, { where: { id_folder: id } });
 
           res.status(204).send();
@@ -118,24 +122,46 @@ folderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), as
   }
 });
 
-// folderRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-//   try {
-//     const id = req.params.id;
-//     const body = req.body;
+//Update project
+folderRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    //Find if the folder exists
+    const folder = await Folder.findByPk(id);
+    if (folder) {
+      //Verify that the logged user owns the folder
+      if (folder.user_id_user === req.user?.id_user) {
+        //Verify that the folder was not deleted logically
+        if (folder.status) {
+          //verify that there's a param
+          if (id) {
+            //Update the folder parsing the body
+            const body = req.body;
+            const updateData = toNewFolder(body);
 
-//     const updatedFolder = toNewFolder(body);
+            await Folder.update(updateData, { where: { id_folder: id } });
 
-//     if (id && updatedFolder) {
-//       await Folder.update({ status: 0 }, { where: { id_folder: id } });
+            res.status(204).send();
+          }
+        }
+        else {
+          res.status(404).send('Folder does not exist');
+        }
+      }
+      else {
+        res.status(401).send('Unauthorized');
+      }
 
-//       res.status(204).send();
-//     }
-//   }
-//   catch (error: unknown) {
-//     if (error instanceof Error) {
-//       next(error);
-//     }
-//   }
-// });
+    }
+    else {
+      res.status(404).send('Folder does not exist');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
 
 export default folderRouter;
