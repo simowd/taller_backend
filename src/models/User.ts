@@ -6,6 +6,7 @@ import Language from './Language';
 
 @Table({tableName: 'user', timestamps: false})
 class User extends Model {
+  
   @PrimaryKey
   @AutoIncrement
   @Column

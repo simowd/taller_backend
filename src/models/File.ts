@@ -1,39 +1,43 @@
 import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import Folder from './Folder';
 import User from './User';
 
-@Table({tableName: 'folder', timestamps: false})
-class Folder extends Model {
+@Table({ tableName: 'file', timestamps: false })
+class File extends Model {
   
   @PrimaryKey
   @AutoIncrement
   @Column
-    id_folder: number;
-  
-  @ForeignKey(() => User)
+    id_file: number;
+
+  @ForeignKey(() => Folder)
   @Column
+    folder_id_folder: number;
+
+  @BelongsTo(() => Folder)
+    folder: Folder;
+
+  @ForeignKey(() => User)
     user_id_user: number;
 
   @BelongsTo(() => User)
     user: User;
-  
-  @Column
-    folder_name: string;
+
+  @Column(DataType.STRING(255))
+    file_name: string;
 
   @Column(DataType.STRING(255))
     path: string;
-  
+
   @Column(DataType.STRING(255))
     storage: string;
 
-  @Column
+  @Column(DataType.DATE)
     creation_date: Date;
-  
+
   @Column
     private: boolean;
   
-  @Column
-    status: boolean;
-
   @Column(DataType.STRING(255))
     tr_id: string;
 
@@ -47,4 +51,4 @@ class Folder extends Model {
     tr_ip: string;
 }
 
-export default Folder;
+export default File;
