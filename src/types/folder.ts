@@ -8,6 +8,7 @@ interface Folder {
   storage: string;
   creation_date: Date;
   private: number;
+  status:number;
   tr_id: string;
   tr_date: Date;
   tr_user_id: number;
@@ -22,7 +23,7 @@ interface NewFolder {
 const toNewFolder = (body: any): NewFolder => {
   const data: NewFolder = {
     folder_name: parseString(body.folder_name),
-    private: parseNumber(body.private)
+    private: parseNumber(+ body.private)
   };
 
   return data;

@@ -18,7 +18,7 @@ folderRouter.get('/', async (req, res, next) => {
     if (user) {
       const allFolders = await Folder.findAll({
         where: {
-          user_id_user: user.id_user,
+          user_id_user: user.id_user, status: 1
         }
       });
 
@@ -63,6 +63,7 @@ folderRouter.post('/', passport.authenticate('jwt', { session: false }), async (
       const folderData = {
         user_id_user: req.user?.id_user,
         path: containerClientResponse.url,
+        status: 1,
         storage: containerId,
         ...newFolderData,
         ...req.transaction,
@@ -80,6 +81,23 @@ folderRouter.post('/', passport.authenticate('jwt', { session: false }), async (
     }
     else {
       res.status(409).send('Folder name already exists');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
+
+//Delete project
+folderRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    if (id) {
+      await Folder.update({ status: 0 }, { where: { id_folder: id } });
+
+      res.status(204).send();
     }
   }
   catch (error: unknown) {

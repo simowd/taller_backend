@@ -98,6 +98,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
       storage: container_id,
       creation_date: new Date(Date.now()),
       private: 1,
+      status: 1,
       ...req.transaction,
       tr_user_id: newUser.id_user
     });
