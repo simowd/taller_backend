@@ -14,6 +14,9 @@ class Folder extends Model {
 
   @BelongsTo(() => User)
     user: User;
+  
+  @Column
+    folder_name: string;
 
   @Column(DataType.STRING(255))
     path: string;
@@ -24,8 +27,8 @@ class Folder extends Model {
   @Column
     creation_date: Date;
   
-  @Column(DataType.TINYINT)
-    private: number;
+  @Column
+    private: boolean;
 
   @Column(DataType.STRING(255))
     tr_id: string;

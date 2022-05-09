@@ -7,6 +7,8 @@ import { unlink } from 'fs';
 import passport from 'passport';
 import User from '../models/User';
 import blobServiceClient from '../utils/azure_blob';
+import { v4 as uuidv4 } from 'uuid'; 
+import Folder from '../models/Folder';
 
 const userRouter = Router();
 
@@ -81,11 +83,24 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     //create the new user
     const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction}, { returning: true });
 
-    const containerClient = await blobServiceClient.getContainerClient(String(newUser.id_user));
+    //Create Azure container for the sketchbook and upload it to the database
 
-    const containerResponse = await containerClient.createIfNotExists();
+    const container_id = uuidv4();
 
-    console.log(containerResponse);
+    const containerClient = await blobServiceClient.getContainerClient(container_id);
+
+    await containerClient.createIfNotExists();
+
+    await Folder.create({
+      user_id_user: newUser.id_user,
+      folder_name: 'Sketchbook',
+      path: containerClient.url,
+      storage: container_id,
+      creation_date: new Date(Date.now()),
+      private: 1,
+      ...req.transaction,
+      tr_user_id: newUser.id_user
+    });
 
     const filteredUser = _.omit(newUser.toJSON(), ignoredFields);
 
