@@ -7,7 +7,11 @@ redis_data/
 #azurite
 __azurite_db_blob__.json
 __azurite_db_blob_extent__.json
+__azurite_db_queue__.json
+__azurite_db_queue_extent__.json
+__azurite_db_table__.json
 __blobstorage__/
+__queuestorage__/
 
 # Logs
 logs

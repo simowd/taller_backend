@@ -135,7 +135,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
   }
   catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error);
+      //console.log(error);
       if (req.file?.path) {
         unlink(req.file?.path, (err) => {
           if (err) console.log(err);
