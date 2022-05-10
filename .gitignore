@@ -3,6 +3,7 @@ mysql_data/
 build/
 public/
 redis_data/
+tmp/
 
 #azurite
 __azurite_db_blob__.json
