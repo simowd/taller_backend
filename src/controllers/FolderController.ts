@@ -107,7 +107,7 @@ folderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), as
         //verify that there's a param
         if (id) {
           //update the resource
-          await Folder.update({ status: 0 }, { where: { id_folder: id } });
+          await Folder.update({ status: 0, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_folder: id } });
 
           res.status(204).send();
         }
@@ -144,7 +144,7 @@ folderRouter.put('/:id', passport.authenticate('jwt', { session: false }), async
             const body = req.body;
             const updateData = toNewFolder(body);
 
-            await Folder.update(updateData, { where: { id_folder: id } });
+            await Folder.update({ ...updateData, ...req.transaction, tr_user_id: req.user?.id_user}, { where: { id_folder: id } });
 
             res.status(204).send();
           }
