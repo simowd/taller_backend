@@ -4,7 +4,6 @@ import { path as appRoot } from 'app-root-path';
 
 console.log(`Connecting to ${MYSQLDB_URI}`);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let loggingOption: any = false;
 
 if(NODE_ENV === 'dev'){

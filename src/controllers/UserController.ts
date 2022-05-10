@@ -4,11 +4,14 @@ import { imageUploader } from '../utils/upload';
 import { ChangePassword, NewUser, toChangePasswordRequest, toNewUser } from '../types/user';
 import bcrypt from 'bcrypt';
 import { unlink } from 'fs';
+import fs from 'fs/promises';
 import passport from 'passport';
 import User from '../models/User';
 import blobServiceClient from '../utils/azure_blob';
 import { v4 as uuidv4 } from 'uuid'; 
 import Folder from '../models/Folder';
+import { path as pathRoot} from 'app-root-path';
+import File from '../models/File';
 
 const userRouter = Router();
 
@@ -91,11 +94,34 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
 
     await containerClient.createIfNotExists();
 
-    await Folder.create({
+    const defaultFolder = await Folder.create({
       user_id_user: newUser.id_user,
       folder_name: 'Sketchbook',
       path: containerClient.url,
       storage: container_id,
+      creation_date: new Date(Date.now()),
+      private: 1,
+      status: 1,
+      ...req.transaction,
+      tr_user_id: newUser.id_user
+    });
+
+    //Load welcome file for upload
+    const welcomeFile = await fs.readFile(`${pathRoot}`+'/src/static/welcome.py');
+
+
+    //Prepare to upload default file 'Welcome'
+    const blob_id = uuidv4() + '.py';
+
+    const blockBlobClient = containerClient.getBlockBlobClient(blob_id);
+    await blockBlobClient.uploadData(welcomeFile, {blobHTTPHeaders: { blobContentType: 'text/x-python' }});
+
+    await File.create({
+      user_id_user: newUser.id_user,
+      folder_id_folder: defaultFolder.id_folder,
+      file_name: 'welcome.py',
+      path: blockBlobClient.url,
+      storage: blob_id,
       creation_date: new Date(Date.now()),
       private: 1,
       status: 1,

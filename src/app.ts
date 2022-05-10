@@ -1,16 +1,23 @@
 import express from 'express';
+
+//Utils imports
+import { databaseCheck } from './utils/database';
+import { path as pathRoot} from 'app-root-path';
+import { NODE_ENV } from './utils/config';
+import { passportBuilder } from './utils/passport';
+
+//Middleware imports
+import passport from 'passport';
+import { buildTransaction, errorLogger, unknownEndpoint } from './utils/middleware';
 import morgan from 'morgan';
 import cors from 'cors';
-import { databaseCheck } from './utils/database';
-import { buildTransaction, errorLogger, unknownEndpoint } from './utils/middleware';
-import { path as pathRoot} from 'app-root-path';
+
+//Router imports
 import userRouter from './controllers/UserController';
-import { NODE_ENV } from './utils/config';
-import passport from 'passport';
-import { passportBuilder } from './utils/passport';
 import loginRouter from './controllers/LoginController';
 import settingsRouter from './controllers/SettingsController';
 import folderRouter from './controllers/FolderController';
+import fileRouter from './controllers/FileController';
 
 const app = express();
 
@@ -39,6 +46,7 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/settings', passport.authenticate('jwt', { session: false }), settingsRouter);
 app.use('/api/v1/projects', folderRouter);
+app.use('/api/v1/files', fileRouter);
 
 //Adding the middleware created
 app.use(unknownEndpoint);

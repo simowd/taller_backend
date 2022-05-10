@@ -37,6 +37,9 @@ class File extends Model {
 
   @Column
     private: boolean;
+
+  @Column
+    status: boolean;
   
   @Column(DataType.STRING(255))
     tr_id: string;

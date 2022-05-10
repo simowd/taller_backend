@@ -1,5 +1,6 @@
 import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import Country from './Country';
+import File from './File';
 import Folder from './Folder';
 import Gender from './Gender';
 import Language from './Language';
@@ -68,6 +69,9 @@ class User extends Model {
   
   @HasMany(() => Folder)
     folders: Folder[];
+
+  @HasMany(() => File)
+    files: File[];
 }
 
 export default User;

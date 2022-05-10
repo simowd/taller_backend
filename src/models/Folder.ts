@@ -1,4 +1,5 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import File from './File';
 import User from './User';
 
 @Table({tableName: 'folder', timestamps: false})
@@ -45,6 +46,9 @@ class Folder extends Model {
 
   @Column(DataType.STRING(50))
     tr_ip: string;
+
+  @HasMany(() => File)
+    files: File[];
 }
 
 export default Folder;
