@@ -3,7 +3,7 @@ import _ from 'lodash';
 import passport from 'passport';
 import File from '../models/File';
 import Folder from '../models/Folder';
-import { FileRequestParams, toNewFile } from '../types/file';
+import { FileRequestParams, toNewFile, toUpdateFile } from '../types/file';
 import blobServiceClient from '../utils/azure_blob';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,38 +19,6 @@ fileRouter.get('/', async (_req, res, next) => {
       return _.omit(file.toJSON(), ignoredFields);
     });
     res.status(200).send(filteredFiles);
-  }
-  catch (error: unknown) {
-    if (error instanceof Error) {
-      next(error);
-    }
-  }
-});
-
-//Delete File from database (logically)
-fileRouter.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    //Find if the file exists
-    const folder = await File.findByPk(id);
-    if (folder) {
-      //Verify that the logged user owns the file
-      if (folder.user_id_user === req.user?.id_user) {
-        //verify that there's a param
-        if (id) {
-          //update the resource
-          await File.update({ status: 0 }, { where: { id_file: id } });
-
-          res.status(204).send();
-        }
-      }
-      else {
-        res.status(401).send('Unauthorized');
-      }
-    }
-    else {
-      res.status(404).send();
-    }
   }
   catch (error: unknown) {
     if (error instanceof Error) {
@@ -126,15 +94,16 @@ fileRouter.post('/', passport.authenticate('jwt', { session: false }), async (re
 fileRouter.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
   try {
     const id = req.params.id;
+
     //Find if the file exists
-    const folder = await File.findByPk(id);
-    if (folder) {
+    const file = await File.findByPk(id);
+    if (file && file.status) {
       //Verify that the logged user owns the file
-      if (folder.user_id_user === req.user?.id_user) {
+      if (file.user_id_user === req.user?.id_user) {
         //verify that there's a param
         if (id) {
           //update the resource
-          await File.update({ status: 0 }, { where: { id_file: id } });
+          await File.update({ status: 0, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_file: id } });
 
           res.status(204).send();
         }
@@ -144,7 +113,42 @@ fileRouter.delete('/:id', passport.authenticate('jwt', { session: false }), asyn
       }
     }
     else {
-      res.status(404).send();
+      res.status(404).send('File does not exist');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
+
+//Update file information
+fileRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const updateData = toUpdateFile(req.body);
+
+    //Find if the file exists
+    const file = await File.findByPk(id);
+    if (file) {
+      //Verify that the logged user owns the file
+      if (file.user_id_user === req.user?.id_user) {
+        //verify that there's a param
+        if (id) {
+          //update the resource
+          await File.update({ ...updateData, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_file: id } });
+
+          res.status(204).send();
+        }
+      }
+      else {
+        res.status(401).send('Unauthorized');
+      }
+    }
+    else {
+      res.status(404).send('File does not exist');
     }
   }
   catch (error: unknown) {
