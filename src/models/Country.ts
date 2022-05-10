@@ -3,6 +3,7 @@ import User from './User';
 
 @Table(({tableName: 'country', timestamps: false}))
 class Country extends Model {
+  
   @PrimaryKey
   @Column(DataType.STRING(5))
     id_country: string;

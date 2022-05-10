@@ -111,7 +111,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
 
 
     //Prepare to upload default file 'Welcome'
-    const blob_id = uuidv4() + '.py';
+    const blob_id = uuidv4();
 
     const blockBlobClient = containerClient.getBlockBlobClient(blob_id);
     await blockBlobClient.uploadData(welcomeFile, {blobHTTPHeaders: { blobContentType: 'text/x-python' }});

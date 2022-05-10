@@ -6,10 +6,14 @@ import { authUser } from '../utils/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import blobServiceClient from '../utils/azure_blob';
 import _ from 'lodash';
+import fileRouter from './FileController';
+import File from '../models/File';
 
 const folderRouter = Router();
 
 const ignoredFields = ['path', 'user_id_user', 'tr_id', 'tr_date', 'tr_user_id', 'tr_ip', 'password', 'status'];
+
+folderRouter.use('/:folderId/files', fileRouter);
 
 //List all folders of a user
 folderRouter.get('/', async (req, res, next) => {
@@ -19,7 +23,8 @@ folderRouter.get('/', async (req, res, next) => {
       const allFolders = await Folder.findAll({
         where: {
           user_id_user: user.id_user, status: 1
-        }
+        },
+        include: [File]
       });
 
       const filteredFolders = allFolders.map((folder) => {
