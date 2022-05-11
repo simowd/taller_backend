@@ -136,7 +136,8 @@ fileRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (
         model: Folder,
         include: [{
           model: File,
-          attributes: ['file_name']
+          attributes: ['file_name'],
+          where: { status: 1}
         }]
       }
     });
