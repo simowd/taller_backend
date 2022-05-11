@@ -10,6 +10,7 @@ import { fileUploader } from '../utils/upload';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import Zip from 'adm-zip';
+import path from 'path';
 
 const fileManagmentRouter = Router();
 
@@ -159,9 +160,9 @@ fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jw
       });
 
       //Verify if folder exists
-      if(folder){
+      if (folder) {
         //Verify if the user owns the project or if it is public
-        if(folder.user_id_user === req.user?.id_user || !folder.private){
+        if (folder.user_id_user === req.user?.id_user || !folder.private) {
 
           //Initialize ZIP file
           const zip = new Zip();
@@ -171,25 +172,118 @@ fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jw
           const containerClient = blobServiceClient.getContainerClient(folder.storage);
 
           //Get all individual files blob id
-          const fileReferences = folder.files.map((file) => ({storage: file.storage, file_name: file.file_name }));
+          const fileReferences = folder.files.map((file) => ({ storage: file.storage, file_name: file.file_name }));
 
-          for (const file of fileReferences){
+          //Download each file as a buffer and add it to the zip file
+          for (const file of fileReferences) {
             const blockBlobClient = containerClient.getBlockBlobClient(file.storage);
             const fileBuffer = await blockBlobClient.downloadToBuffer();
 
-            zip.addFile(file.file_name ,fileBuffer);
+            zip.addFile(file.file_name, fileBuffer);
           }
 
+          //Save the file on the tmp folder and then send it to the user.
           await zip.writeZip(targetPath);
-
           res.download(targetPath);
         }
         else {
           res.send(401).send('Unauthorized');
         }
       }
-      else{
+      else {
         res.status(404).send('Folder does not exist');
+      }
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error);
+      next(error);
+    }
+  }
+});
+
+//Save a project from a zip file to Azure and the Database
+fileManagmentRouter.post('/download/project/', [fileUploader.single('file'), passport.authenticate('jwt', { session: false })], async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = req.file;
+    if (file) {
+      if (file.mimetype === 'application/zip') {
+
+        //Get file
+        const fileName = path.parse(file.originalname).name;
+        const projectsUser = await Folder.findAll({ where: { user_id_user: req.user?.id_user, status: 1 } });
+
+        const filteredNames = projectsUser.map((folder) => folder.folder_name);
+
+        //Verify that the file is unique in name
+        if (filteredNames.indexOf(fileName) <= -1) {
+
+          //Azure blob setup
+          const newContainerId = uuidv4();
+          const containerClient = blobServiceClient.getContainerClient(newContainerId);
+
+          //Create new container
+          await containerClient.createIfNotExists();
+
+          const folder = await Folder.create({
+            user_id_user: req.user?.id_user,
+            folder_name: fileName,
+            path: containerClient.url,
+            storage: newContainerId,
+            creation_date: new Date(Date.now()),
+            private: true,
+            status: 1,
+            ...req.transaction,
+            tr_user_id: req.user?.id_user
+          });
+
+          //Get the zip sent by the user
+          const zip = new Zip(file.buffer);
+          const files = zip.getEntries();
+
+          const dataToCreate = [];
+
+          for (const file of files) {
+            console.log(file.getData().toString());
+
+            const fileData = file.getData().toString();
+
+            const blobId = uuidv4();
+            const blockBlobClient = containerClient.getBlockBlobClient(blobId);
+
+            await blockBlobClient.upload(fileData, fileData.length, { blobHTTPHeaders: { blobContentType: 'text/x-python' } });
+
+            dataToCreate.push({
+              folder_id_folder: folder.id_folder,
+              user_id_user: req.user?.id_user,
+              file_name: file.entryName,
+              path: blockBlobClient.url,
+              storage: blobId,
+              creation_date: new Date(Date.now()),
+              private: true,
+              status: 1,
+              ...req.transaction,
+              tr_user_id: req.user?.id_user
+            });
+          }
+
+          const allFiles = await File.bulkCreate(dataToCreate, { returning: true });
+
+          const fileData = allFiles.map((file) => _.omit(file.toJSON(), ignoredFields));
+          const filteredFolder = _.omit(folder.toJSON(), ignoredFields) as any;
+
+          filteredFolder.files = fileData;
+
+          res.status(200).send(filteredFolder);
+        }
+        else {
+          res.status(409).send('Folder already exists');
+        }
+
+      }
+      else {
+        res.status(400).send('Folder does not match zip extension');
       }
     }
   }
