@@ -109,6 +109,8 @@ folderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), as
           //update the resource
           await Folder.update({ status: 0, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_folder: id } });
 
+          await File.update({ status: 0, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { folder_id_folder: id } });
+
           res.status(204).send();
         }
       }
