@@ -143,8 +143,21 @@ folderRouter.put('/:id', passport.authenticate('jwt', { session: false }), async
             //Update the folder parsing the body
             const body = req.body;
             const updateData = toNewFolder(body);
+            const allFolders = await Folder.findAll({
+              where: {
+                user_id_user: req.user.id_user, status: 1
+              },
+            });
+            //Verify if file name does not exist on the desired folder
+            if (updateData.folder_name) {
+              const fileNames = allFolders.map((file) => file.folder_name);
 
-            await Folder.update({ ...updateData, ...req.transaction, tr_user_id: req.user?.id_user}, { where: { id_folder: id } });
+              if (fileNames.indexOf(updateData.folder_name) >= 0) {
+                res.status(409).send('Folder already exists');
+              }
+            }
+
+            await Folder.update({ ...updateData, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_folder: id } });
 
             res.status(204).send();
           }
