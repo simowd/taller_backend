@@ -12,6 +12,7 @@ interface FileUpdateRequestBody {
 
 interface FileRequestParams {
   folderId?: string;
+  fileId?: string;
 }
 
 const toNewFile = (body: any): FileRequestBody => {

@@ -3,7 +3,7 @@ import express from 'express';
 //Utils imports
 import { databaseCheck } from './utils/database';
 import { path as pathRoot} from 'app-root-path';
-import { NODE_ENV } from './utils/config';
+import { createFileManagmentCycle, NODE_ENV } from './utils/config';
 import { passportBuilder } from './utils/passport';
 
 //Middleware imports
@@ -18,11 +18,14 @@ import loginRouter from './controllers/LoginController';
 import settingsRouter from './controllers/SettingsController';
 import folderRouter from './controllers/FolderController';
 import fileRouter from './controllers/FileController';
+import fileManagmentRouter from './controllers/FileManagmentController';
 
 const app = express();
 
 //Checking database status
 databaseCheck();
+//Create tmp directory and settings
+createFileManagmentCycle();
 
 //Configuring Middleware
 app.use(cors());
@@ -47,6 +50,7 @@ app.use('/api/v1/login', loginRouter);
 app.use('/api/v1/settings', passport.authenticate('jwt', { session: false }), settingsRouter);
 app.use('/api/v1/projects', folderRouter);
 app.use('/api/v1/files', fileRouter);
+app.use('/api/v1/transfer', fileManagmentRouter);
 
 //Adding the middleware created
 app.use(unknownEndpoint);
