@@ -131,12 +131,28 @@ fileRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (
     const updateData = toUpdateFile(req.body);
 
     //Find if the file exists
-    const file = await File.findByPk(id);
+    const file = await File.findByPk(id, {
+      include: {
+        model: Folder,
+        include: [{
+          model: File,
+          attributes: ['file_name']
+        }]
+      }
+    });
     if (file) {
       //Verify that the logged user owns the file
       if (file.user_id_user === req.user?.id_user) {
         //verify that there's a param
         if (id) {
+          //Verify if file name does not exist on the desired folder
+          if (updateData.file_name) {
+            const fileNames = file.folder.files.map((file) => file.file_name);
+
+            if (fileNames.indexOf(updateData.file_name) >= 0) {
+              res.status(409).send('File already exists');
+            }
+          }
           //update the resource
           await File.update({ ...updateData, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_file: id } });
 
