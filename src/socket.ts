@@ -7,8 +7,6 @@ import { validUser } from './utils/middleware';
 import connectHandler from './handlers/connectHandler';
 import messageHandler from './handlers/messageHandler';
 
-
-
 export const socket = async (httpServer: http.Server) => {
   //New config instance
   const io = new Server(httpServer, {

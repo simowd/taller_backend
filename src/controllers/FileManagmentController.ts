@@ -9,6 +9,7 @@ import { path as pathRoot } from 'app-root-path';
 import { fileUploader } from '../utils/upload';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
+import Zip from 'adm-zip';
 
 const fileManagmentRouter = Router();
 
@@ -135,6 +136,61 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
     }
     else {
       res.status(404).send('File does not exist');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error);
+      next(error);
+    }
+  }
+});
+
+fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const idFolder = req.params.idFolder;
+    if (idFolder) {
+      //Get project info  and the files in it
+      const folder = await Folder.findByPk(idFolder, {
+        include: {
+          model: File,
+          where: { status: 1 }
+        }
+      });
+
+      //Verify if folder exists
+      if(folder){
+        //Verify if the user owns the project or if it is public
+        if(folder.user_id_user === req.user?.id_user || !folder.private){
+
+          //Initialize ZIP file
+          const zip = new Zip();
+          const targetPath = `${pathRoot}/tmp/${folder.storage}/${folder.folder_name}.zip`;
+
+          //Get container information of azure
+          const containerClient = blobServiceClient.getContainerClient(folder.storage);
+
+          //Get all individual files blob id
+          const fileReferences = folder.files.map((file) => ({storage: file.storage, file_name: file.file_name }));
+
+          for (const file of fileReferences){
+            const blockBlobClient = containerClient.getBlockBlobClient(file.storage);
+            const fileBuffer = await blockBlobClient.downloadToBuffer();
+
+            zip.addFile(file.file_name ,fileBuffer);
+          }
+
+          await zip.writeZip(targetPath);
+
+          res.download(targetPath);
+        }
+        else {
+          res.send(401).send('Unauthorized');
+        }
+      }
+      else{
+        res.status(404).send('Folder does not exist');
+      }
     }
   }
   catch (error: unknown) {
