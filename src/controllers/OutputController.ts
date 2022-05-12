@@ -3,6 +3,7 @@ import _ from 'lodash';
 import passport from 'passport';
 import Output from '../models/Output';
 import { toNewOutput } from '../types/output';
+import { Op } from 'sequelize';
 
 const outputRouter = Router();
 
@@ -18,6 +19,37 @@ outputRouter.get('/:fileId/all', passport.authenticate('jwt', { session: false }
       const filteredOutputs = allOutputs.map((output) => _.omit(output.toJSON(), ignoredFields));
 
       res.status(200).send(filteredOutputs);
+    }
+    else {
+      res.status(400).send('Params not added');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
+
+outputRouter.get('/:fileId/last', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const fileId = req.params.fileId;
+    if (fileId) {
+      const lastOutput = await Output.findOne({
+        where: { file_id_file: fileId, tr_date: { [Op.lt]: Date.now() }, tr_user_id: req.user?.id_user },
+        order: [['tr_date', 'DESC']],
+      });
+
+      if (lastOutput) {
+        const filteredOutput = _.omit(lastOutput.toJSON(), ignoredFields);
+
+        res.status(200).send(filteredOutput);
+      }
+      else {
+        res.status(404).send('File does not exist');
+      }
+
+
     }
     else {
       res.status(400).send('Params not added');
