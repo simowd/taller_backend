@@ -19,6 +19,7 @@ import settingsRouter from './controllers/SettingsController';
 import folderRouter from './controllers/FolderController';
 import fileRouter from './controllers/FileController';
 import fileManagmentRouter from './controllers/FileManagmentController';
+import outputRouter from './controllers/OutputController';
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use('/api/v1/settings', passport.authenticate('jwt', { session: false }), se
 app.use('/api/v1/projects', folderRouter);
 app.use('/api/v1/files', fileRouter);
 app.use('/api/v1/transfer', fileManagmentRouter);
+app.use('/api/v1/output', outputRouter);
 
 //Adding the middleware created
 app.use(unknownEndpoint);
