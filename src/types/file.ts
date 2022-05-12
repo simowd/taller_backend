@@ -16,9 +16,9 @@ interface FileRequestParams {
 }
 
 interface FileSocketBody {
-  file_id?: number;
-  folder_id?: number;
-  value?: string;
+  file_storage: string;
+  folder_storage: string;
+  value: string;
 }
 
 const toNewFile = (body: any): FileRequestBody => {
