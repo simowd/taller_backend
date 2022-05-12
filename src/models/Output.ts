@@ -19,7 +19,7 @@ class Output extends Model {
   @Column
     status: number;
 
-  @Column(DataType.STRING(255))
+  @Column(DataType.STRING(500))
     result: string;
 
   @Column(DataType.STRING(255))
