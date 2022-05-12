@@ -1,5 +1,6 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import Folder from './Folder';
+import Output from './Output';
 import User from './User';
 
 @Table({ tableName: 'file', timestamps: false })
@@ -52,6 +53,9 @@ class File extends Model {
 
   @Column(DataType.STRING(50))
     tr_ip: string;
+
+  @HasMany(() => Output)
+    outputs: Output[];
 }
 
 export default File;
