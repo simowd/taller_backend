@@ -4,8 +4,9 @@ import http from 'http';
 import { instrument } from '@socket.io/admin-ui';
 import { NODE_ENV } from './utils/config';
 import { validUser } from './utils/middleware';
-import connectHandler from './handlers/connectHandler';
-import messageHandler from './handlers/messageHandler';
+import connectHandler from './sockets/connectHandler';
+import messageHandler from './sockets/messageHandler';
+import { socketLogger } from './utils/logger';
 
 export const socket = async (httpServer: http.Server) => {
   //New config instance
@@ -28,7 +29,7 @@ export const socket = async (httpServer: http.Server) => {
 
   //Create connection function
   const onConnection = (socket: Socket) => {
-    console.log(`User id: ${socket.data.user_id} Socket id:  ${socket.id} has connected`);
+    socketLogger(`User id: ${socket.data.user_id} Socket id:  ${socket.id} has connected`);
     connectHandler(io, socket);
     messageHandler(io, socket);
   };

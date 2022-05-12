@@ -29,5 +29,6 @@ const MYSQLDB_URI = getEnvironmentVariable('NODE_ENV') === 'test' ? getEnvironme
 const NODE_ENV = getEnvironmentVariable('NODE_ENV');
 const SECRET = getEnvironmentVariable('SECRET');
 const AZURE_STORAGE_CONNECTION_STRING = getEnvironmentVariable('AZURE_STORAGE_CONNECTION_STRING');
+const REDIS_HOST = getEnvironmentVariable('REDIS_HOST');
 
-export { PORT, MYSQLDB_URI, NODE_ENV, SECRET, AZURE_STORAGE_CONNECTION_STRING, createFileManagmentCycle };
+export { PORT, MYSQLDB_URI, NODE_ENV, SECRET, AZURE_STORAGE_CONNECTION_STRING, REDIS_HOST,createFileManagmentCycle };

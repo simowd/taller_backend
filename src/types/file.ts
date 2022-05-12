@@ -15,6 +15,12 @@ interface FileRequestParams {
   fileId?: string;
 }
 
+interface FileSocketBody {
+  file_id?: number;
+  folder_id?: number;
+  value?: string;
+}
+
 const toNewFile = (body: any): FileRequestBody => {
   const newFile: FileRequestBody = {
     file_name: parseString(body.file_name),
@@ -37,4 +43,4 @@ const toUpdateFile = (body: any): FileUpdateRequestBody => {
   return newFile;
 };
 
-export { FileRequestParams, FileRequestBody, FileUpdateRequestBody,toNewFile, toUpdateFile };
+export { FileRequestParams, FileRequestBody, FileUpdateRequestBody, FileSocketBody, toNewFile, toUpdateFile };
