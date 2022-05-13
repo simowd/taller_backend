@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import _ from 'lodash';
+import passport from 'passport';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { blobBufferDownloader } from '../utils/azure_blob';
@@ -6,14 +8,16 @@ import { lazyAuthUser } from '../utils/middleware';
 
 const editorRouter = Router();
 
-editorRouter.get('/file/:fileId', async(req, res, next) => {
+const ignoredFields = ['user_id_user', 'status', 'tr_id', 'tr_date', 'tr_user_id', 'tr_ip', 'password', 'status'];
+
+editorRouter.get('/file/:fileId', async (req, res, next) => {
   try {
     const fileId = req.params.fileId;
-    const file = await File.findOne({where: { id_file: fileId, status: 1 }, include: { model: Folder, required: false, where: { status: 1 }}});
+    const file = await File.findOne({ where: { id_file: fileId, status: 1 }, include: { model: Folder, required: false, where: { status: 1 } } });
 
     if (file) {
       const auth = await lazyAuthUser(req);
-      if( !file.private || auth){
+      if (!file.private || auth) {
         const fileBuffer = await blobBufferDownloader(file.folder.storage, file.storage);
 
         const data = {
@@ -32,6 +36,55 @@ editorRouter.get('/file/:fileId', async(req, res, next) => {
     }
     else {
       res.status(404).send('File not found');
+    }
+  }
+  catch (error: unknown) {
+    if (error instanceof Error) {
+      next(error);
+    }
+  }
+});
+
+
+editorRouter.get('/project/:idProject', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+  try {
+    const projectId = req.params.idProject;
+    const folder = await Folder.findOne({
+      where: { id_folder: projectId, status: 1 },
+      include: [{
+        model: File,
+        required: false,
+        where: { status: 1 }
+      }]
+    });
+
+    const files: Array<any> = new Array<any>();
+
+    if (folder) {
+      for (const file of folder.files) {
+        const data = await blobBufferDownloader(folder.storage, file.storage);
+        
+        const transferFileData = {
+          ...file.toJSON(),
+          content: data.toString()
+        };
+
+        const filteredFileData = _.omit(transferFileData, ignoredFields);
+
+        files.push(filteredFileData);
+      }
+
+      const filteredFolder =  _.omit(folder.toJSON(), ignoredFields);
+
+      const newFolder = {
+        ...filteredFolder,
+        files: files
+      };
+
+      res.status(200).send(newFolder);
+    }
+    else {
+      res.status(404).send('Folder does not exist');
     }
   }
   catch (error: unknown) {
