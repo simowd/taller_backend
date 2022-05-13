@@ -4,6 +4,8 @@ import Output from '../models/Output';
 import Setting from '../models/Setting';
 import User from '../models/User';
 import sequelize from './database';
+import fs from 'fs-extra';
+import { path as appRoot } from 'app-root-path';
 
 const createUsers = [
   {
@@ -38,4 +40,12 @@ const deleteDatabaseData = async () => {
   await sequelize.query('ALTER TABLE folder AUTO_INCREMENT = 100;');
 };
 
-export { createUsers, deleteDatabaseData };
+const endTestSequence = async () => {
+  await sequelize.close();
+  await fs.emptyDir(`${appRoot}/public/images/`);
+  console.log('Deleted image files');
+  await fs.emptyDir(`${appRoot}/tmp/`);
+  console.log('Deleted tmp files');
+};
+
+export { createUsers, deleteDatabaseData, endTestSequence };
