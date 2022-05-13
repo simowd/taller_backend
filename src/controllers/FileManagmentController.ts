@@ -3,7 +3,7 @@ import passport from 'passport';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { FileRequestParams } from '../types/file';
-import blobServiceClient from '../utils/azure_blob';
+import { blobBufferDownloader, blobContainerCreator, blobDataUploader, blobFileUploader } from '../utils/azure_blob';
 import fs from 'fs-extra';
 import { path as pathRoot } from 'app-root-path';
 import { fileUploader } from '../utils/upload';
@@ -30,13 +30,8 @@ fileManagmentRouter.get('/download/file/:fileId', passport.authenticate('jwt', {
           //Possible path
           const projectPath = `${pathRoot}/tmp/${file.folder.storage}`;
           const filePath = `${projectPath}/${file.file_name}`;
-          //Get the container where the file is stored
-          const containerClient = blobServiceClient.getContainerClient(file.folder.storage);
-
-          //Get the file as a stream
-          const blockBlobClient = containerClient.getBlockBlobClient(file.storage);
-
-          const buffer = await blockBlobClient.downloadToBuffer();
+         
+          const buffer = await blobBufferDownloader(file.folder.storage, file.storage);
 
           //Create directory in the specified path
           await fs.ensureDir(projectPath);
@@ -97,14 +92,7 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
             const fileId = uuidv4();
 
             //Upload file to Azure
-            const containerClient = blobServiceClient.getContainerClient(folder.storage);
-
-            const blockBlobClient = containerClient.getBlockBlobClient(fileId);
-
-            await blockBlobClient.uploadData(currentFile?.buffer);
-
-            console.log(blockBlobClient);
-            console.log(containerClient);
+            const blockBlobClient = await blobDataUploader(folder.storage, fileId, currentFile.buffer);
 
             const dbFileData = {
               user_id_user: req.user.id_user,
@@ -168,16 +156,13 @@ fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jw
           const zip = new Zip();
           const targetPath = `${pathRoot}/tmp/${folder.storage}/${folder.folder_name}.zip`;
 
-          //Get container information of azure
-          const containerClient = blobServiceClient.getContainerClient(folder.storage);
-
           //Get all individual files blob id
           const fileReferences = folder.files.map((file) => ({ storage: file.storage, file_name: file.file_name }));
 
           //Download each file as a buffer and add it to the zip file
           for (const file of fileReferences) {
-            const blockBlobClient = containerClient.getBlockBlobClient(file.storage);
-            const fileBuffer = await blockBlobClient.downloadToBuffer();
+            //Download from Azure
+            const fileBuffer = await blobBufferDownloader(folder.storage, file.storage);
 
             zip.addFile(file.file_name, fileBuffer);
           }
@@ -221,10 +206,7 @@ fileManagmentRouter.post('/download/project/', [fileUploader.single('file'), pas
 
           //Azure blob setup
           const newContainerId = uuidv4();
-          const containerClient = blobServiceClient.getContainerClient(newContainerId);
-
-          //Create new container
-          await containerClient.createIfNotExists();
+          const containerClient = await blobContainerCreator(newContainerId);
 
           const folder = await Folder.create({
             user_id_user: req.user?.id_user,
@@ -250,9 +232,7 @@ fileManagmentRouter.post('/download/project/', [fileUploader.single('file'), pas
             const fileData = file.getData().toString();
 
             const blobId = uuidv4();
-            const blockBlobClient = containerClient.getBlockBlobClient(blobId);
-
-            await blockBlobClient.upload(fileData, fileData.length, { blobHTTPHeaders: { blobContentType: 'text/x-python' } });
+            const blockBlobClient = await blobFileUploader(newContainerId, blobId, fileData);
 
             dataToCreate.push({
               folder_id_folder: folder.id_folder,

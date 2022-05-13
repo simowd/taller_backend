@@ -13,7 +13,6 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(connectionStrin
 //File uploader
 export const blobFileUploader = async (containerId: string, fileId: string, content: string) => {
   const blobContainerClient = blobServiceClient.getContainerClient(containerId);
-
   const newBlockBlobClient = blobContainerClient.getBlockBlobClient(fileId);
 
   await newBlockBlobClient.upload(content, content.length, { blobHTTPHeaders: { blobContentType: 'text/x-python' } });
@@ -24,7 +23,6 @@ export const blobFileUploader = async (containerId: string, fileId: string, cont
 //File Buffer Uploader
 export const blobDataUploader = async (containerId: string, fileId: string, content: Buffer) => {
   const blobContainerClient = blobServiceClient.getContainerClient(containerId);
-
   const newBlockBlobClient = blobContainerClient.getBlockBlobClient(fileId);
 
   await newBlockBlobClient.uploadData(content, { blobHTTPHeaders: { blobContentType: 'text/x-python' } });
@@ -38,6 +36,17 @@ export const blobContainerCreator = async (containerId: string) => {
   const containerClient = await blobServiceClient.getContainerClient(containerId);
   await containerClient.createIfNotExists();
   return containerClient;
+};
+
+export const blobBufferDownloader = async (containerId: string, fileId: string) => {
+  //Get the container where the file is stored
+  const containerClient = blobServiceClient.getContainerClient(containerId);
+
+  //Get the file as a stream
+  const blockBlobClient = containerClient.getBlockBlobClient(fileId);
+  const buffer = await blockBlobClient.downloadToBuffer();
+
+  return buffer;
 };
 
 export default blobServiceClient;
