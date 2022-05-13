@@ -4,7 +4,7 @@ import Folder from '../models/Folder';
 import { toNewFolder } from '../types/folder';
 import { authUser } from '../utils/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import blobServiceClient from '../utils/azure_blob';
+import { blobContainerCreator } from '../utils/azure_blob';
 import _ from 'lodash';
 import fileRouter from './FileController';
 import File from '../models/File';
@@ -60,9 +60,7 @@ folderRouter.post('/', passport.authenticate('jwt', { session: false }), async (
       const containerId = uuidv4();
 
       //Create container on Azure
-      const containerClientResponse = blobServiceClient.getContainerClient(containerId);
-
-      await containerClientResponse.createIfNotExists();
+      const containerClientResponse = await blobContainerCreator(containerId);
 
       //Prepare the date to be uploaded to the database
       const folderData = {
