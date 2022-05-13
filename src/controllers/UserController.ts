@@ -7,7 +7,7 @@ import { unlink } from 'fs';
 import fs from 'fs/promises';
 import passport from 'passport';
 import User from '../models/User';
-import blobServiceClient from '../utils/azure_blob';
+import { blobContainerCreator, blobDataUploader } from '../utils/azure_blob';
 import { v4 as uuidv4 } from 'uuid'; 
 import Folder from '../models/Folder';
 import { path as pathRoot} from 'app-root-path';
@@ -90,9 +90,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
 
     const container_id = uuidv4();
 
-    const containerClient = await blobServiceClient.getContainerClient(container_id);
-
-    await containerClient.createIfNotExists();
+    const containerClient = await blobContainerCreator(container_id);
 
     const defaultFolder = await Folder.create({
       user_id_user: newUser.id_user,
@@ -110,11 +108,9 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     const welcomeFile = await fs.readFile(`${pathRoot}`+'/src/static/welcome.py');
 
 
-    //Prepare to upload default file 'Welcome'
+    //Upload default file 'Welcome'
     const blob_id = uuidv4();
-
-    const blockBlobClient = containerClient.getBlockBlobClient(blob_id);
-    await blockBlobClient.uploadData(welcomeFile, {blobHTTPHeaders: { blobContentType: 'text/x-python' }});
+    const blockBlobClient = await blobDataUploader(container_id, blob_id, welcomeFile);
 
     await File.create({
       user_id_user: newUser.id_user,
