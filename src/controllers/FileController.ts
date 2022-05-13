@@ -4,7 +4,7 @@ import passport from 'passport';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { FileRequestParams, toNewFile, toUpdateFile } from '../types/file';
-import blobServiceClient from '../utils/azure_blob';
+import { blobFileUploader } from '../utils/azure_blob';
 import { v4 as uuidv4 } from 'uuid';
 
 const fileRouter = Router({ mergeParams: true });
@@ -44,20 +44,16 @@ fileRouter.post('/', passport.authenticate('jwt', { session: false }), async (re
           const ifExists = folder.files.map((file) => file.file_name).indexOf(newData.file_name);
 
           if (ifExists <= -1) {
-            const blobContainerClient = blobServiceClient.getContainerClient(folder.storage);
-
             const fileName = uuidv4();
-
-            const newBlockBlobClient = blobContainerClient.getBlockBlobClient(fileName);
 
             const content = '';
 
-            await newBlockBlobClient.upload(content, content.length, { blobHTTPHeaders: { blobContentType: 'text/x-python' } });
+            const blockBlobClient = await blobFileUploader(folder.storage, fileName, content);
 
             const newFile = await File.create({
               user_id_user: req.user.id_user,
               folder_id_folder: folderId,
-              path: newBlockBlobClient.url,
+              path: blockBlobClient.url,
               storage: fileName,
               status: 1,
               ...newData,
