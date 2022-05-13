@@ -1,8 +1,7 @@
 import supertest from 'supertest';
 import app from '../app';
-import User from '../models/User';
 import sequelize from '../utils/database';
-import { createUsers } from '../utils/testSetup';
+import { createUsers, deleteDatabaseData } from '../utils/testSetup';
 import fs from 'fs-extra';
 import { path as appRoot } from 'app-root-path';
 
@@ -10,8 +9,7 @@ const api = supertest(app);
 
 beforeAll(async () => {
   try {
-    await User.destroy({ where: {} });
-    await sequelize.query('ALTER TABLE user AUTO_INCREMENT = 1;');
+    await deleteDatabaseData();
     for(const user of createUsers) {
       await api.post('/api/v1/users').field(user).attach('avatar', `${__dirname}/media/user.png`);
     }

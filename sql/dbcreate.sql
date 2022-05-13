@@ -141,7 +141,7 @@ CREATE TABLE tr_folder (
 
 -- Table: tr_output
 CREATE TABLE tr_output (
-    tr_output_id int NOT NULL,
+    tr_output_id int NOT NULL AUTO_INCREMENT,
     id_output int NOT NULL,
     file_id_file int NOT NULL,
     status int NOT NULL,
@@ -248,3 +248,93 @@ ALTER TABLE user ADD CONSTRAINT user_language FOREIGN KEY user_language (languag
 ALTER TABLE user AUTO_INCREMENT = 100;
 
 -- End of file.
+
+delimiter //
+-- Trigger when a user is inserted and log it to the transaction table
+CREATE TRIGGER tg_ins_tr_user AFTER INSERT ON user
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_user VALUES (null, NEW.id_user, NEW.country_id_country, NEW.gender_id_gender, NEW.language_id_language, NEW.name, NEW.last_name, NEW.username, NEW.email, NEW.password, NEW.picture, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a user is updated and log it to the transaction table
+CREATE TRIGGER tg_upd_tr_user AFTER UPDATE ON user
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_user VALUES (null, NEW.id_user, NEW.country_id_country, NEW.gender_id_gender, NEW.language_id_language, NEW.name, NEW.last_name, NEW.username, NEW.email, NEW.password, NEW.picture, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Create default values for settings for a new user
+CREATE TRIGGER tg_ins_def_setting AFTER INSERT ON user
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO setting VALUES (null, NEW.id_user, 0, 1, 0, 0, 12, "Ubuntu Mono", NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a setting is inserted and log it to the transaction table
+CREATE TRIGGER tg_ins_tr_setting AFTER INSERT ON setting
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_setting VALUES (null, NEW.id_setting, NEW.user_id_user,NEW.dark_light, NEW.audio_feedback, NEW.animations, NEW.high_contrast, NEW.font_size, NEW.font_type, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a setting is updated and log it to the transaction table
+CREATE TRIGGER tg_upd_tr_setting AFTER UPDATE ON setting
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_setting VALUES (null, NEW.id_setting, NEW.user_id_user, NEW.dark_light, NEW.audio_feedback, NEW.animations, NEW.high_contrast, NEW.font_size, NEW.font_type, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a folder is inserted and log it to the transaction table
+CREATE TRIGGER tg_ins_tr_folder AFTER INSERT ON folder
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_folder VALUES (null, NEW.id_folder, NEW.user_id_user,NEW.folder_name, NEW.path, NEW.storage, NEW.creation_date, NEW.private, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a folder is updated and log it to the transaction table
+CREATE TRIGGER tg_upd_tr_folder AFTER UPDATE ON folder
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_folder VALUES (null, NEW.id_folder, NEW.user_id_user,NEW.folder_name, NEW.path, NEW.storage, NEW.creation_date, NEW.private, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a folder is inserted and log it to the transaction tabletaller.tr_file
+CREATE TRIGGER tg_ins_tr_file AFTER INSERT ON file
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_file VALUES (null, NEW.id_file, NEW.folder_id_folder,NEW.user_id_user, NEW.file_name, NEW.path, NEW.storage, NEW.creation_date, NEW.private, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a folder is updated and log it to the transaction table
+CREATE TRIGGER tg_upd_tr_file AFTER UPDATE ON file
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_file VALUES (null, NEW.id_file, NEW.folder_id_folder, NEW.user_id_user, NEW.file_name, NEW.path, NEW.storage, NEW.creation_date, NEW.private, NEW.status, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
+
+delimiter //
+-- Trigger when a folder is updated and log it to the transaction table
+CREATE TRIGGER tg_ins_tr_output AFTER INSERT ON output
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO tr_output VALUES (null, NEW.id_output, NEW.file_id_file, NEW.status, NEW.result, NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+    END;//
+delimiter ;
