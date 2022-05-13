@@ -30,7 +30,7 @@ fileManagmentRouter.get('/download/file/:fileId', passport.authenticate('jwt', {
           //Possible path
           const projectPath = `${pathRoot}/tmp/${file.folder.storage}`;
           const filePath = `${projectPath}/${file.file_name}`;
-         
+
           const buffer = await blobBufferDownloader(file.folder.storage, file.storage);
 
           //Create directory in the specified path
@@ -65,10 +65,12 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
     const folder = await Folder.findByPk(id, {
       include: {
         model: File,
+        required: false,
         attributes: ['file_name'],
         where: { status: 1 }
       }
     });
+
     if (folder && folder.status) {
       //Verify that the logged user owns the folder
       if (folder.user_id_user === req.user?.id_user) {
@@ -76,14 +78,18 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
         if (id) {
           //Verify that the file name is unique
           const currentFile = req.file;
-          const file_names = folder.files.map((file) => {
-            return file.file_name;
-          });
-          //Check that the file has a name
-          if (currentFile?.originalname) {
-            //Verify that file doesn't exist (with the same name)
-            if (file_names.indexOf(currentFile.originalname) >= 0) {
-              res.status(409).send('File with the same name already exists on the project');
+
+          //Check if the folder has files
+          if (folder.files.length > 0) {
+            const file_names = folder.files.map((file) => {
+              return file.file_name;
+            });
+            //Check that the file has a name
+            if (currentFile?.originalname) {
+              //Verify that file doesn't exist (with the same name)
+              if (file_names.indexOf(currentFile.originalname) >= 0) {
+                res.status(409).send('File with the same name already exists on the project');
+              }
             }
           }
 
@@ -124,7 +130,7 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
       }
     }
     else {
-      res.status(404).send('File does not exist');
+      res.status(404).send('Folder does not exist');
     }
   }
   catch (error: unknown) {
@@ -189,7 +195,7 @@ fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jw
 });
 
 //Save a project from a zip file to Azure and the Database
-fileManagmentRouter.post('/download/project/', [fileUploader.single('file'), passport.authenticate('jwt', { session: false })], async (req: Request, res: Response, next: NextFunction) => {
+fileManagmentRouter.post('/upload/project/', [fileUploader.single('file'), passport.authenticate('jwt', { session: false })], async (req: Request, res: Response, next: NextFunction) => {
   try {
     const file = req.file;
     if (file) {
