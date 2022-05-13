@@ -1,9 +1,6 @@
 import supertest from 'supertest';
 import app from '../app';
-import sequelize from '../utils/database';
-import { createUsers, deleteDatabaseData } from '../utils/testSetup';
-import fs from 'fs-extra';
-import { path as appRoot } from 'app-root-path';
+import { createUsers, deleteDatabaseData, endTestSequence } from '../utils/testSetup';
 
 const api = supertest(app);
 
@@ -87,7 +84,5 @@ describe('[/api/v1/users] Test user endpoints', () => {
 });
 
 afterAll(async () => {
-  await sequelize.close();
-  await fs.emptyDir(`${appRoot}/public/images/`);
-  console.log('Deleted image files');
+  await endTestSequence();
 });
