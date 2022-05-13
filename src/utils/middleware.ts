@@ -83,4 +83,24 @@ const authUser = async (req: Request) => {
   }
 };
 
-export { errorLogger, unknownEndpoint, validUser, buildTransaction, authUser };
+const lazyAuthUser = async (req: Request) => {
+  //Get and decode token
+  const auth = req.get('Authorization');
+  if (auth) {
+    const token = auth.substring(7);
+    const decodedToken = jwt.verify(token, SECRET);
+    //Verify user veracity
+    if (decodedToken) {
+      const id: string = decodedToken.sub as string;
+      const user = await User.findByPk(id);
+      if (user) {
+        return user;
+      }
+    }
+  }
+  else{
+    return undefined;
+  }
+};
+
+export { errorLogger, unknownEndpoint, validUser, buildTransaction, authUser, lazyAuthUser };

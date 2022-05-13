@@ -20,6 +20,7 @@ import folderRouter from './controllers/FolderController';
 import fileRouter from './controllers/FileController';
 import fileManagmentRouter from './controllers/FileManagmentController';
 import outputRouter from './controllers/OutputController';
+import editorRouter from './controllers/EditorController';
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api/v1/projects', folderRouter);
 app.use('/api/v1/files', fileRouter);
 app.use('/api/v1/transfer', fileManagmentRouter);
 app.use('/api/v1/output', outputRouter);
+app.use('/api/v1/editor', editorRouter);
 
 //Adding the middleware created
 app.use(unknownEndpoint);
