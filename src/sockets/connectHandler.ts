@@ -7,11 +7,18 @@ const connectHandler = (_io: Server, socket: Socket) => {
   //New connection logger
   const onDisconnect = async (reason: string) => {
     socketLogger(`User: ${socket.id} has disconnected. Reason: ${reason}`);
-
-    const redisHash = await hash.hgetall(`${socket.id}`);
-
-    console.log(saveAll(redisHash));
-
+    try {
+      //Get data from Redis database
+      const redisHash = await hash.hgetall(`${socket.id}`);
+      //Save to data
+      await saveAll(redisHash, socket);
+      await hash.hdel(`${socket.id}`);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        socketLogger(`${error.message}`);
+      }
+    }
   };
 
   socket.on('disconnect', onDisconnect);
