@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import 'app-root-path';
 import fs from 'fs-extra';
-import { path as pathRoot} from 'app-root-path';
+import { path as pathRoot } from 'app-root-path';
 
 const TIME = 10 * 60000;
 
@@ -17,11 +17,13 @@ const createFileManagmentCycle = () => {
   const tmpDir = `${pathRoot}/tmp`;
   fs.ensureDirSync(tmpDir);
   console.log(`Temporary data folder at ${tmpDir}`);
+  if (NODE_ENV !== 'test') {
+    setInterval(() => {
+      fs.emptyDirSync(tmpDir);
+      console.log('/tmp -- Temporary data folder emptied');
+    }, TIME);
 
-  setInterval(() => {
-    fs.emptyDirSync(tmpDir);
-    console.log('/tmp -- Temporary data folder emptied');
-  }, TIME);
+  }
 };
 
 const PORT: string = getEnvironmentVariable('PORT');
@@ -31,4 +33,4 @@ const SECRET = getEnvironmentVariable('SECRET');
 const AZURE_STORAGE_CONNECTION_STRING = getEnvironmentVariable('AZURE_STORAGE_CONNECTION_STRING');
 const REDIS_HOST = getEnvironmentVariable('REDIS_HOST');
 
-export { PORT, MYSQLDB_URI, NODE_ENV, SECRET, AZURE_STORAGE_CONNECTION_STRING, REDIS_HOST,createFileManagmentCycle };
+export { PORT, MYSQLDB_URI, NODE_ENV, SECRET, AZURE_STORAGE_CONNECTION_STRING, REDIS_HOST, createFileManagmentCycle };

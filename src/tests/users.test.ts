@@ -13,6 +13,7 @@ beforeAll(async () => {
     await User.destroy({ where: {} });
     await sequelize.query('ALTER TABLE user AUTO_INCREMENT = 1;');
     for (const user of createUsers) {
+      console.log('muere x2');
       await api.post('/api/v1/users').field(user).attach('avatar', `${__dirname}/media/user.png`);
     }
     console.log('User data has been re-created');
