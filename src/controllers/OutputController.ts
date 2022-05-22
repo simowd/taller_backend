@@ -67,7 +67,9 @@ outputRouter.post('/:fileId', passport.authenticate('jwt', { session: false }), 
   try {
     const fileId = req.params.fileId;
     if (fileId) {
-      if (req.body.status && req.body.result) {
+      console.log(req.body);
+      if (req.body.status && req.body.result !== undefined) {
+        
         const outputData = toNewOutput(req.body);
         await Output.create({
           file_id_file: fileId,
@@ -86,6 +88,7 @@ outputRouter.post('/:fileId', passport.authenticate('jwt', { session: false }), 
     }
   }
   catch (error: unknown) {
+    console.log(error);
     if (error instanceof Error) {
       next(error);
     }

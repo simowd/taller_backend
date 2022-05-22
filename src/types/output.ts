@@ -1,4 +1,4 @@
-import { parseNumber, parseString } from '../utils/parsers';
+import { parseNumber } from '../utils/parsers';
 
 interface NewOutput {
   status: number;
@@ -8,7 +8,7 @@ interface NewOutput {
 const toNewOutput = (body: any): NewOutput => {
   const newOutput: NewOutput = {
     status: parseNumber(body.status),
-    result: parseString(body.result),
+    result: (body.result),
   };
 
   return newOutput;
