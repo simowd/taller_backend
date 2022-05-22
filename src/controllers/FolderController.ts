@@ -24,7 +24,11 @@ folderRouter.get('/', async (req, res, next) => {
         where: {
           user_id_user: user.id_user, status: 1
         },
-        include: [File]
+        include: [{
+          model: File,
+          where: { status: 1},
+          required: false
+        }]
       });
 
       const filteredFolders = allFolders.map((folder) => {

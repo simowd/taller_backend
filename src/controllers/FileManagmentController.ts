@@ -79,6 +79,8 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
           //Verify that the file name is unique
           const currentFile = req.file;
 
+          console.log(currentFile);
+
           //Check if the folder has files
           if (folder.files.length > 0) {
             const file_names = folder.files.map((file) => {
@@ -119,7 +121,7 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
 
           }
           else {
-            res.status(400).send();
+            res.status(400).send('Buffer is empty');
           }
 
           res.status(200).send();
@@ -135,7 +137,6 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
   }
   catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error);
       next(error);
     }
   }
@@ -188,7 +189,6 @@ fileManagmentRouter.get('/download/project/:idFolder', passport.authenticate('jw
   }
   catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error);
       next(error);
     }
   }
@@ -200,7 +200,6 @@ fileManagmentRouter.post('/upload/project/', [fileUploader.single('file'), passp
     const file = req.file;
     if (file) {
       if (file.mimetype === 'application/zip') {
-
         //Get file
         const fileName = path.parse(file.originalname).name;
         const projectsUser = await Folder.findAll({ where: { user_id_user: req.user?.id_user, status: 1 } });
@@ -233,7 +232,6 @@ fileManagmentRouter.post('/upload/project/', [fileUploader.single('file'), passp
           const dataToCreate = [];
 
           for (const file of files) {
-            console.log(file.getData().toString());
 
             const fileData = file.getData().toString();
 
@@ -272,10 +270,12 @@ fileManagmentRouter.post('/upload/project/', [fileUploader.single('file'), passp
         res.status(400).send('Folder does not match zip extension');
       }
     }
+    else {
+      res.status(400).send('Folder not provided');
+    }
   }
   catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error);
       next(error);
     }
   }

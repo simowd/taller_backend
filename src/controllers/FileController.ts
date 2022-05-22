@@ -32,7 +32,13 @@ fileRouter.post('/', passport.authenticate('jwt', { session: false }), async (re
   try {
     const folderId = req.params.folderId;
     //Find if the file exists
-    const folder = await Folder.findByPk(folderId, { include: [File] });
+    const folder = await Folder.findOne({
+      include: [{
+        model: File,
+        where: { status: 1 },
+        required: false
+      }], where: { id_folder: folderId, status: 1 }
+    });
     if (folder) {
       //Verify that the logged user owns the file
       if (folder.user_id_user === req.user?.id_user) {
@@ -133,7 +139,7 @@ fileRouter.put('/:id', passport.authenticate('jwt', { session: false }), async (
         include: [{
           model: File,
           attributes: ['file_name'],
-          where: { status: 1}
+          where: { status: 1 }
         }]
       }
     });

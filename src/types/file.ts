@@ -36,8 +36,14 @@ const toUpdateFile = (body: any): FileUpdateRequestBody => {
   if(body.file_name){
     newFile.file_name = parseString(body.file_name);
   }
-  if(body.private){
-    newFile.private = !!parseNumber(body.private);
+  if(body.private !== null || body.private !== undefined){
+    console.log(body.private);
+    if (body.private === 0){
+      newFile.private = false;  
+    }
+    else {
+      newFile.private = !!parseNumber(body.private);
+    }
   }
 
   return newFile;

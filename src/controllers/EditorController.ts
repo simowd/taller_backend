@@ -61,27 +61,33 @@ editorRouter.get('/project/:idProject', passport.authenticate('jwt', { session: 
     const files: Array<any> = new Array<any>();
 
     if (folder) {
-      for (const file of folder.files) {
-        const data = await blobBufferDownloader(folder.storage, file.storage);
-        
-        const transferFileData = {
-          ...file.toJSON(),
-          content: data.toString()
+      if (folder.user_id_user === req.user?.id_user || !folder.private){
+        for (const file of folder.files) {
+          const data = await blobBufferDownloader(folder.storage, file.storage);
+          
+          const transferFileData = {
+            ...file.toJSON(),
+            content: data.toString()
+          };
+  
+          const filteredFileData = _.omit(transferFileData, ignoredFields);
+  
+          files.push(filteredFileData);
+        }
+  
+        const filteredFolder =  _.omit(folder.toJSON(), ignoredFields);
+  
+        const newFolder = {
+          ...filteredFolder,
+          files: files
         };
-
-        const filteredFileData = _.omit(transferFileData, ignoredFields);
-
-        files.push(filteredFileData);
+  
+        res.status(200).send(newFolder);
       }
-
-      const filteredFolder =  _.omit(folder.toJSON(), ignoredFields);
-
-      const newFolder = {
-        ...filteredFolder,
-        files: files
-      };
-
-      res.status(200).send(newFolder);
+      else {
+        res.status(203).send();
+      }
+      
     }
     else {
       res.status(404).send('Folder does not exist');

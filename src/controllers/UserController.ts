@@ -8,9 +8,9 @@ import fs from 'fs/promises';
 import passport from 'passport';
 import User from '../models/User';
 import { blobContainerCreator, blobDataUploader } from '../utils/azure_blob';
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import Folder from '../models/Folder';
-import { path as pathRoot} from 'app-root-path';
+import { path as pathRoot } from 'app-root-path';
 import File from '../models/File';
 
 const userRouter = Router();
@@ -84,7 +84,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     newUserRequest.password = hashedPassword;
 
     //create the new user
-    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction}, { returning: true });
+    const newUser = await User.create({ ...newUserRequest, picture: picturePath, status: 1, ...req.transaction }, { returning: true });
 
     //Create Azure container for the sketchbook and upload it to the database
 
@@ -105,7 +105,7 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
     });
 
     //Load welcome file for upload
-    const welcomeFile = await fs.readFile(`${pathRoot}`+'/src/static/welcome.py');
+    const welcomeFile = await fs.readFile(`${pathRoot}` + '/src/static/welcome.py');
 
 
     //Upload default file 'Welcome'
@@ -131,7 +131,6 @@ userRouter.post('/', imageUploader.single('avatar'), async (req, res, next) => {
   }
   catch (error: unknown) {
     if (error instanceof Error) {
-      //console.log(error);
       if (req.file?.path) {
         unlink(req.file?.path, (err) => {
           if (err) console.log(err);
@@ -148,7 +147,7 @@ userRouter.put('/', passport.authenticate('jwt', { session: false }), async (req
     const body = req.body;
     const user = req.user;
 
-    await User.update({ ...body, ...req.transaction, tr_user_id: req.user?.id_user}, {where: { id_user: user?.id_user}});
+    await User.update({ ...body, ...req.transaction, tr_user_id: req.user?.id_user }, { where: { id_user: user?.id_user } });
 
     res.status(204).send();
   }
@@ -173,16 +172,19 @@ userRouter.put('/password', passport.authenticate('jwt', { session: false }), as
     if (!isPasswordCorrect) {
       res.status(403).send({ error: 'password is not correct' });
     }
+    else {
+      const newHashedPassword = await bcrypt.hash(body.new_password, saltRounds);
 
-    const newHashedPassword = await bcrypt.hash(body.new_password, saltRounds);
+      await User.update({ password: newHashedPassword, ...req.transaction, tr_user_id: req.user?.id_user }, {
+        where: {
+          id_user: user.id_user
+        }
+      });
 
-    await User.update({ password: newHashedPassword, ...req.transaction, tr_user_id: req.user?.id_user }, {
-      where: {
-        id_user: user.id_user
-      }
-    });
+      res.status(204).send();
+    }
 
-    res.status(204).send();
+
   } catch (error: unknown) {
     if (error instanceof Error) {
       next(error);

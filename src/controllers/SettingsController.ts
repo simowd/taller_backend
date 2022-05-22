@@ -37,7 +37,6 @@ settingsRouter.put('/', async (req, res, next) => {
 
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log(error);
       next(error);
     }
   }
