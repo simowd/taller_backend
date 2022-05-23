@@ -12,7 +12,7 @@ const connectHandler = (_io: Server, socket: Socket) => {
       const redisHash = await hash.hgetall(`${socket.id}`);
       //Save to data
       await saveAll(redisHash, socket);
-      await hash.hdel(`${socket.id}`);
+      await hash.del(`${socket.id}`);
     }
     catch (error) {
       if (error instanceof Error) {
