@@ -272,7 +272,7 @@ delimiter //
 CREATE TRIGGER tg_ins_def_setting AFTER INSERT ON user
     FOR EACH ROW
     BEGIN
-        INSERT INTO setting VALUES (null, NEW.id_user, 0, 1, 0, 0, 12, "Ubuntu Mono", NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
+        INSERT INTO setting VALUES (null, NEW.id_user, 0, 0, 0, 0, 16, "Ubuntu Mono", NEW.tr_id , NEW.tr_date, NEW.tr_user_id, NEW.tr_ip);
     END;//
 delimiter ;
 

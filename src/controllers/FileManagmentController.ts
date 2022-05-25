@@ -79,8 +79,6 @@ fileManagmentRouter.post('/upload/file/:projectId', [fileUploader.single('file')
           //Verify that the file name is unique
           const currentFile = req.file;
 
-          console.log(currentFile);
-
           //Check if the folder has files
           if (folder.files.length > 0) {
             const file_names = folder.files.map((file) => {
