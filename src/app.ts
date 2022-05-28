@@ -2,7 +2,7 @@ import express from 'express';
 
 //Utils imports
 import { databaseCheck } from './utils/database';
-import { path as pathRoot} from 'app-root-path';
+import { path as pathRoot } from 'app-root-path';
 import { createFileManagmentCycle, NODE_ENV } from './utils/config';
 import { passportBuilder } from './utils/passport';
 
@@ -21,6 +21,7 @@ import fileRouter from './controllers/FileController';
 import fileManagmentRouter from './controllers/FileManagmentController';
 import outputRouter from './controllers/OutputController';
 import editorRouter from './controllers/EditorController';
+import path from 'path';
 
 const app = express();
 
@@ -32,6 +33,7 @@ createFileManagmentCycle();
 //Configuring Middleware
 app.use(cors());
 app.use(morgan('combined'));
+app.use(express.static(path.join(__dirname, 'build')));
 app.use(express.json());
 
 //Initialize passport
@@ -42,10 +44,10 @@ app.use(passport.initialize());
 app.use(buildTransaction);
 
 //Serve public path for local development
-if(NODE_ENV === 'dev'){
+if (NODE_ENV === 'dev') {
   app.use(express.static(`${pathRoot}/public/`));
 }
-  
+
 //Setting up the controllers
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/login', loginRouter);
@@ -55,6 +57,11 @@ app.use('/api/v1/files', fileRouter);
 app.use('/api/v1/transfer', fileManagmentRouter);
 app.use('/api/v1/output', outputRouter);
 app.use('/api/v1/editor', editorRouter);
+
+//Serve the frontend app
+app.get('/*', function (_req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 //Adding the middleware created
 app.use(unknownEndpoint);
