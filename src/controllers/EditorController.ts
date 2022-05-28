@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import _ from 'lodash';
-import passport from 'passport';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { blobBufferDownloader } from '../utils/azure_blob';
@@ -17,7 +16,8 @@ editorRouter.get('/file/:fileId', async (req, res, next) => {
 
     if (file) {
       const auth = await lazyAuthUser(req);
-      if (!file.private || auth) {
+      
+      if (!file.private || auth?.id_user === file.user_id_user) {
         const fileBuffer = await blobBufferDownloader(file.folder.storage, file.storage);
 
         const data = {
@@ -30,7 +30,7 @@ editorRouter.get('/file/:fileId', async (req, res, next) => {
         res.status(200).send(data);
       }
       else {
-        res.status(409).send();
+        res.status(401).send();
       }
 
     }
@@ -46,7 +46,7 @@ editorRouter.get('/file/:fileId', async (req, res, next) => {
 });
 
 
-editorRouter.get('/project/:idProject', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+editorRouter.get('/project/:idProject', async (req, res, next) => {
   try {
     const projectId = req.params.idProject;
     const folder = await Folder.findOne({
@@ -59,9 +59,10 @@ editorRouter.get('/project/:idProject', passport.authenticate('jwt', { session: 
     });
 
     const files: Array<any> = new Array<any>();
+    const auth = await lazyAuthUser(req);
 
     if (folder) {
-      if (folder.user_id_user === req.user?.id_user || !folder.private){
+      if (folder.user_id_user === auth?.id_user || !folder.private){
         for (const file of folder.files) {
           const data = await blobBufferDownloader(folder.storage, file.storage);
           
