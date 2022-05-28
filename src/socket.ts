@@ -14,7 +14,8 @@ export const socket = async (httpServer: http.Server) => {
     cors: {
       origin: true,
       credentials: true
-    }
+    },
+    path: '/socket'
   });
 
   //socket.io Admin Config
