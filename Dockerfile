@@ -4,6 +4,14 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
 
+RUN mkdir /usr/src/public/
+RUN mkdir /usr/src/public/images/
+RUN mkdir /usr/src/public/files/
+
+COPY docker/backend_setup.sh /entrypoint.sh
+RUN chmod 0755 /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 ENV MYSQL_URI="mysql://admin:abc123@localhost:3306/taller"
 ENV PORT="8080"
 ENV TEST_MYSQL_URI="mysql://admin:abc123@localhost:3306/testing"
@@ -14,7 +22,7 @@ ENV REDIS_HOST="localhost"
 RUN npm ci
 
 #build the project
-RUN npm run tsc
+RUN npm run build
 
 USER node
 

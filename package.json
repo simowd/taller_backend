@@ -9,7 +9,7 @@
     "dev": "NODE_ENV=dev ts-node-dev index.ts",
     "lint": "eslint --ext .ts .",
     "test": "NODE_ENV=test DOTENV_CONFIG_PATH=./.env.test jest --verbose --runInBand --forceExit --detectOpenHandles",
-    "start": "NODE_ENV=prod node build/index.js"
+    "start": "NODE_ENV=prod ts-node-dev index.ts"
   },
   "author": "Martin Campuzano Flores",
   "license": "ISC",
