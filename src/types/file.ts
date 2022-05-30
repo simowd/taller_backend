@@ -24,7 +24,7 @@ interface FileSocketBody {
 const toNewFile = (body: any): FileRequestBody => {
   const newFile: FileRequestBody = {
     file_name: parseString(body.file_name),
-    private: !!parseNumber(body.private)
+    private: !!body.private
   };
 
   return newFile;
