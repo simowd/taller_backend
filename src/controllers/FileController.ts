@@ -47,6 +47,8 @@ fileRouter.post('/', passport.authenticate('jwt', { session: false }), async (re
 
           const newData = toNewFile(req.body);
 
+          console.log(req.body);
+
           const ifExists = folder.files.map((file) => file.file_name).indexOf(newData.file_name);
 
           if (ifExists <= -1) {
