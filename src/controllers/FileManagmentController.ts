@@ -197,7 +197,7 @@ fileManagmentRouter.post('/upload/project/', [fileUploader.single('file'), passp
   try {
     const file = req.file;
     if (file) {
-      if (file.mimetype === 'application/zip') {
+      if (file.mimetype === 'application/zip' || file.mimetype === 'application/octet-stream' || file.mimetype === 'application/x-zip-compressed' || file.mimetype === 'multipart/x-zip') {
         //Get file
         const fileName = path.parse(file.originalname).name;
         const projectsUser = await Folder.findAll({ where: { user_id_user: req.user?.id_user, status: 1 } });
