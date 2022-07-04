@@ -3,8 +3,11 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { SECRET } from '../utils/config';
 import User from '../models/User';
+import _ from 'lodash';
 
 const loginRouter = Router();
+
+const ignoredFields = ['countryIdCountry', 'genderIdGender', 'languageIdLanguage', 'tr_id', 'tr_date', 'tr_user_id', 'tr_ip', 'password', 'status'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const issueJWT = (user: any) => {
@@ -38,7 +41,7 @@ loginRouter.post('/', async (req, res, next) => {
 
     if (isPasswordCorrect) {
       const token = issueJWT(user);
-      res.status(200).send({ success: true, token: token, user_id: user.id_user, locale: user.language_id_language });
+      res.status(200).send({ success: true, token: token, user_id: user.id_user, locale: user.language_id_language, user: _.omit(user.toJSON(), ignoredFields) });
     }
     else {
       res.status(401).send({ success: false, error: 'Password is incorrect' });

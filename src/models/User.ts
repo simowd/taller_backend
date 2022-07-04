@@ -1,4 +1,4 @@
-import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AutoIncrement, BelongsTo, Column, DataType, Default, ForeignKey, HasMany, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import Country from './Country';
 import File from './File';
 import Folder from './Folder';
@@ -45,6 +45,14 @@ class User extends Model {
 
   @Column(DataType.INTEGER)
     status: number;
+
+  @Default(1)
+  @Column(DataType.INTEGER)
+    tour_home: number;
+
+  @Default(1)
+  @Column(DataType.INTEGER)
+    tour_editor: number;
 
   @Column(DataType.STRING(255))
     tr_id: string;
