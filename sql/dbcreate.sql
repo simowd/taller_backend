@@ -1,7 +1,7 @@
 USE taller;
 ALTER DATABASE taller CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2022-05-09 18:13:29.807
+-- Last modification date: 2022-07-15 20:08:19.82
 
 -- tables
 -- Table: country
@@ -141,7 +141,7 @@ CREATE TABLE tr_folder (
 
 -- Table: tr_output
 CREATE TABLE tr_output (
-    tr_output_id int NOT NULL AUTO_INCREMENT,
+    tr_output_id int NOT NULL,
     id_output int NOT NULL,
     file_id_file int NOT NULL,
     status int NOT NULL,
@@ -205,6 +205,8 @@ CREATE TABLE user (
     password varchar(255) NOT NULL,
     picture varchar(255) NULL,
     status int NOT NULL,
+    tour_home bool NOT NULL DEFAULT true,
+    tour_editor bool NOT NULL DEFAULT true,
     tr_id varchar(255) NULL,
     tr_date timestamp NULL,
     tr_user_id int NULL,
